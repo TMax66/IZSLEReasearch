@@ -2,6 +2,11 @@
 ###############################
 library(tidyverse)
 library(bibliometrix)
+library("Matrix")
+library("stringr")
+library("igraph")
+library("FactoMineR")
+library("factoextra")
 
 
 D <- readFiles("izsler.bib")
@@ -9,19 +14,15 @@ M <- convert2df(D, dbsource = "scopus", format = "bibtex")
 
 results <- biblioAnalysis(M, sep = ";")
 
-NetMatrix <- biblioNetwork(M, analysis = "co-citation", network = "references", sep = ".  ")
 
+plot(x = results, k = 10, pause = FALSE)
 
+DF<-dominance(results, k = 10)
 
-plot(results)
+NetMatrix<-biblioNetwork(M, analysis = "coupling", network = "authors", sep = ";")
+net=networkPlot(NetMatrix, n = 20, Title = "Authors' Coupling", type = "fruchterman", size=FALSE, 
+                remove.multiple=TRUE, vos.path = "/home/malou/git/IZSLEReasearch")
 
-topSO=sourceGrowth(d, top=10, cdf=TRUE)
-
-
-library(reshape2)
-library(ggplot2)
-DF=melt(topSO, id='Year')
-ggplot(DF,aes(Year,value, group=variable, color=variable))+geom_line()
 
 
 ########################################################
