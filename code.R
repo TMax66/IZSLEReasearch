@@ -12,10 +12,23 @@ library("factoextra")
 D <- readFiles("izsler.bib")
 M <- convert2df(D, dbsource = "scopus", format = "bibtex")
 
+M<-M %>% 
+  filter(PY>=1999)
+
 results <- biblioAnalysis(M, sep = ";")
 
+country<-as.data.frame(results[["Countries"]])
+country %>% 
+arrange(Freq) %>% 
+mutate(Country = factor(Tab, unique(Tab))) %>% 
+ggplot(aes(x=Freq, y=Country))+geom_point()
 
-plot(x = results, k = 10, pause = FALSE)
+
+
+
+
+
+plot(x = results,  pause = FALSE)
 
 DF<-dominance(results, k = 10)
 
