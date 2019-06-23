@@ -51,3 +51,7 @@ wa<-word_atomizations(abs)
 
 
 library(adjutant)
+
+#############################
+library(readxl)
+prizsler <- read_excel("prizsler.xlsx")
