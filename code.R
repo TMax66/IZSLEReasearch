@@ -11,12 +11,17 @@ library("factoextra")
 
 D <- readFiles("izsler.bib")
 M <- convert2df(D, dbsource = "scopus", format = "bibtex")
-
 M<-M %>% 
   filter(PY>=1999)
-
 results <- biblioAnalysis(M, sep = ";")
 
+
+
+
+
+
+
+# numero articoli per country###
 country<-as.data.frame(results[["Countries"]])
 country %>% 
 arrange(Freq) %>% 
