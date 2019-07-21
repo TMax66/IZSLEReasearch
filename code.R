@@ -2,61 +2,35 @@
 ###############################
 library(tidyverse)
 library(bibliometrix)
-library("Matrix")
-library("stringr")
-library("igraph")
-library("FactoMineR")
-library("factoextra")
+library(Matrix)
+library(stringr)
+library(igraph)
+library(FactoMineR)
+library(factoextra)
+library(scholar)
 
-
+rm(list=ls())
 D <- readFiles("izsler.bib")
 M <- convert2df(D, dbsource = "scopus", format = "bibtex")
-M<-M %>% 
-  filter(PY>=1999)
-results <- biblioAnalysis(M, sep = ";")
 
 
+M %>% 
+  #filter(PY>=2005) %>% 
+  group_by(SO) %>% 
+  summarise(n=n()) %>% 
+  arrange(n) %>% 
+  filter(n>1) %>% 
+  mutate(SO = factor(SO, unique(SO))) %>% 
+  ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()+
+  facet_grid(~PY)
 
 
+######################################
 
+journals<-levels(as.factor(M$SO))
+JIF<-get_impactfactor(journals)
 
-
-# numero articoli per country###
-country<-as.data.frame(results[["Countries"]])
-country %>% 
-arrange(Freq) %>% 
-mutate(Country = factor(Tab, unique(Tab))) %>% 
-ggplot(aes(x=Freq, y=Country))+geom_point()
-
-
-
-
-
-
-plot(x = results,  pause = FALSE)
-
-DF<-dominance(results, k = 10)
-
-NetMatrix<-biblioNetwork(M, analysis = "coupling", network = "authors", sep = ";")
-net=networkPlot(NetMatrix, n = 20, Title = "Authors' Coupling", type = "fruchterman", size=FALSE, 
-                remove.multiple=TRUE, vos.path = "/home/malou/git/IZSLEReasearch")
-
-
-
-########################################################
-############PUBMED MINER################################
-########################################################
-
-library(pubmed.mineR)
-
-abs<-xmlreadabs("pubmed_result.xml")
-abs<-readabs("pubmed_result.txt")
-abs<-cleanabs(abs)
-wa<-word_atomizations(abs) 
-
-
-library(adjutant)
-
-#############################
-library(readxl)
-prizsler <- read_excel("prizsler.xlsx")
+JIF %>% 
+arrange(ImpactFactor) %>% 
+  mutate(Journal = factor(Journal, unique(Journal))) %>% 
+  ggplot(aes(x=Journal, y=ImpactFactor))+geom_bar(stat = "identity")+coord_flip()
