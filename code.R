@@ -24,6 +24,21 @@ M %>%
   ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()
 
 
+j<-M %>% 
+  filter(PY>2005) %>% 
+  group_by(SO) %>% 
+  summarise(n=n()) %>% 
+  arrange(n) %>% 
+  top_n(10, n)
+
+JIF<-get_impactfactor(j$SO, max.distance = 3)
+
+JIF %>% 
+  arrange(ImpactFactor) %>% 
+  mutate(Journal = factor(Journal, unique(Journal))) %>% 
+  ggplot(aes(x=Journal, y=ImpactFactor))+geom_bar(stat = "identity")+coord_flip()
+
+
 M %>% 
   group_by(PY) %>% 
   summarise(n=n()) %>% 
@@ -33,12 +48,12 @@ M %>%
 
 ######################################
 
-journals<-levels(as.factor(M$SO))
-JIF<-get_impactfactor(journals, max.distance = 3)
+izsler<-biblioAnalysis(M,sep=";")
+S<-summary(object = izsler, k = 10, pause = FALSE)
 
-JIF %>% 
-arrange(ImpactFactor) %>% 
-  mutate(Journal = factor(Journal, unique(Journal))) %>% 
-  ggplot(aes(x=Journal, y=ImpactFactor))+geom_bar(stat = "identity")+coord_flip()
+DF<-dominance(izsler, k = 10)
 
-get_impactfactor("PLOSE ONE")
+
+authors<-gsub(","," ",names(izsler$Authors)[1:15])
+indices<-Hindex(M, authors, sep = ";")
+indices$H
