@@ -19,6 +19,9 @@ izsve <- convert2df(izsve, dbsource = "scopus", format = "bibtex")
 izsam<- readFiles("izsam.bib")
 izsam <- convert2df(izsam, dbsource = "scopus", format = "bibtex")
 
+izsto<- readFiles("izsto.bib")
+izsto <- convert2df(izsto, dbsource = "scopus", format = "bibtex")
+
 ####produttività###
 
 A=izsler %>% 
@@ -40,7 +43,17 @@ C=izsam %>%
 
 C$Istituto<-rep("izsam", dim(C)[1])
 
-prod<-rbind(A,B,C)
+
+D=izsto %>% 
+  group_by(PY) %>% 
+  summarise(n=n()) %>% 
+  filter(PY<2019 & PY>=2005) 
+
+D$Istituto<-rep("izsto", dim(D)[1])
+
+
+
+prod<-rbind(A,B,C,D)
 
 prod %>% 
   ggplot(aes(x=PY, y=n, group=Istituto, color=Istituto))+geom_line()+
@@ -48,21 +61,7 @@ prod %>%
   scale_x_continuous(breaks=c(2005:2018))
 
 
-##################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  ##################################
 
 
 izsler %>% 
@@ -96,16 +95,32 @@ izsam %>%
 
 
 
-j<- %>% 
+j<-izsler%>% 
   filter(PY>2005) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   arrange(n) %>% 
   top_n(10, n)
 
-JIF<-get_impactfactor(j$SO, max.distance = 3)
 
-JIF %>% 
+jve<-izsve%>% 
+  filter(PY>2005) %>% 
+  group_by(SO) %>% 
+  summarise(n=n()) %>% 
+  arrange(n) %>% 
+  top_n(10, n)
+
+
+Jizsler<-get_impactfactor(j$SO, max.distance = 3)
+
+Jizve<-get_impactfactor(jve$SO, max.distance = 3)
+
+a<-Jizsler %>% 
+  arrange(ImpactFactor) %>% 
+  mutate(Journal = factor(Journal, unique(Journal))) %>% 
+  ggplot(aes(x=Journal, y=ImpactFactor))+geom_bar(stat = "identity")+coord_flip()
+
+b<-Jizve %>% 
   arrange(ImpactFactor) %>% 
   mutate(Journal = factor(Journal, unique(Journal))) %>% 
   ggplot(aes(x=Journal, y=ImpactFactor))+geom_bar(stat = "identity")+coord_flip()
@@ -113,7 +128,30 @@ JIF %>%
 
 
 
+topAU <- authorProdOverTime(izsler, k = 10, graph = TRUE)
+
+a<-biblioAnalysis(izsler)
+L <- lotka(a)
+
+A<-cocMatrix(izsler, Field = "SO", sep = ";")
+sort(Matrix::colSums(A), decreasing = TRUE)[1:5]
+
+
+NetMatrix <- biblioNetwork(izsler, analysis = "coupling", network = "authors", sep = ";")
+
+net=networkPlot(NetMatrix,  normalize = "salton", weighted=NULL, n = 100,
+                Title = "Authors' Coupling", type = "fruchterman", 
+                size=5,size.cex=T,remove.multiple=TRUE,
+              labelsize=0.8,label.n=10,label.cex=F)
+
+
+CS <- conceptualStructure(izsler,field="ID", method="CA",
+                          minDegree=4, clust=5, stemming=FALSE, labelsize=10, documents=10)
 ######################################
+
+library(rAltmetric)
+acuna <- altmetrics(doi = "10.1179/135100002125000406")
+
 
 izsler<-biblioAnalysis(M,sep=";")
 S<-summary(object = izsler, k = 10, pause = FALSE)
