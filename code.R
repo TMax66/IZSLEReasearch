@@ -9,7 +9,7 @@ library(FactoMineR)
 library(factoextra)
 library(scholar)
 
-rm(list=ls())
+#rm(list=ls())
 izsler<- readFiles("izsler.bib")
 izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
 
@@ -65,12 +65,12 @@ prod %>%
 
 
 izsler %>% 
-  filter(PY>2005) %>% 
+  filter(PY==2005) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   top_n(10, n) %>% 
-  arrange(n) %>% 
-  mutate(SO = factor(SO, unique(SO))) %>% 
+  arrange(desc(n)) %>% 
+  mutate(SO = factor(SO, unique(SO))) %>%
   ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()
 
 izsve %>% 
@@ -127,26 +127,34 @@ b<-Jizve %>%
 
 
 
+# 
+# topAU <- authorProdOverTime(izsler, k = 10, graph = TRUE)
+# 
+# a<-biblioAnalysis(izsler)
+# L <- lotka(a)
+# 
+# A<-cocMatrix(izsler, Field = "SO", sep = ";")
+# sort(Matrix::colSums(A), decreasing = TRUE)[1:5]
 
-topAU <- authorProdOverTime(izsler, k = 10, graph = TRUE)
-
-a<-biblioAnalysis(izsler)
-L <- lotka(a)
-
-A<-cocMatrix(izsler, Field = "SO", sep = ";")
-sort(Matrix::colSums(A), decreasing = TRUE)[1:5]
-
-
-NetMatrix <- biblioNetwork(izsler, analysis = "coupling", network = "authors", sep = ";")
-
-net=networkPlot(NetMatrix,  normalize = "salton", weighted=NULL, n = 100,
-                Title = "Authors' Coupling", type = "fruchterman", 
-                size=5,size.cex=T,remove.multiple=TRUE,
-              labelsize=0.8,label.n=10,label.cex=F)
+##########CO-CITATION ANALYSIS#######
+izsler<- readFiles("izsler.bib")
+izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
 
 
-CS <- conceptualStructure(izsler,field="ID", method="CA",
-                          minDegree=4, clust=5, stemming=FALSE, labelsize=10, documents=10)
+
+net<-NetMatrix <- biblioNetwork(izsler, analysis = "co-citation", 
+                           network = "references", sep = ";")
+
+networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network", 
+                type = "fruchterman", size.cex=TRUE, size=20, 
+                remove.multiple=FALSE, labelsize=0.7,edgesize = 10, 
+                edges.min=5)
+
+
+M=metaTagExtraction(izsler,"CR_SO",sep=";")
+NetMatrix <- biblioNetwork(M, analysis = "co-citation", network = "sources", sep = ";")
+net=networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network", type = "auto", size.cex=TRUE, size=15, remove.multiple=FALSE, labelsize=0.7,edgesize = 10, edges.min=5)
+
 ######################################
 
 library(rAltmetric)
@@ -162,3 +170,6 @@ DF<-dominance(izsler, k = 10)
 authors<-gsub(","," ",names(izsler$Authors)[1:15])
 indices<-Hindex(M, authors, sep = ";")
 indices$H
+####################################################################
+
+
