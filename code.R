@@ -9,9 +9,37 @@ library(FactoMineR)
 library(factoextra)
 library(scholar)
 
-#rm(list=ls())
-izsler<- readFiles("izsler.bib")
-izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
+rm(list=ls())
+
+izsler<- readFiles("wos1izsler.bib","wos2izsler.bib","wos3izsler.bib")
+izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
+
+
+
+#izsler<- readFiles("izsler.bib")
+#izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
+
+results <-biblioAnalysis(izsler, sep = ";")
+S<-summary(results, k = 10, pause = FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 izsve<- readFiles("izsve.bib")
 izsve <- convert2df(izsve, dbsource = "scopus", format = "bibtex")
