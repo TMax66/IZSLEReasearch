@@ -8,8 +8,14 @@ library(igraph)
 library(FactoMineR)
 library(factoextra)
 library(scholar)
+library(topicmodels)
+library(tidytext)
+library(tm)
+library(ggthemes)
 
-rm(list=ls())
+
+
+#rm(list=ls())
 
 izsler<- readFiles("wos1izsler.bib","wos2izsler.bib","wos3izsler.bib")
 izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
@@ -23,7 +29,41 @@ results <-biblioAnalysis(izsler, sep = ";")
 S<-summary(results, k = 10, pause = FALSE)
 
 
+####TEXT MINING#####
+tryTolower<-function(x){
+  y=NA
+  try_error=tryCatch(tolower(x), error=function(e) e)
+  if(!inherits(try_error, 'error'))
+    y=tolower(x)
+  return(y)
+}
 
+clean.corpus<-function(corpus){
+  corpus<-tm_map(corpus, content_transformer(tryTolower))
+  corpus<-tm_map(corpus, removeWords, custom.stopwords)
+  corpus<-tm_map(corpus, removePunctuation)
+  corpus<-tm_map(corpus, stripWhitespace)
+  corpus<-tm_map(corpus,removeNumbers)
+  return(corpus)
+}
+
+key<-data.frame(doc_id=seq(1:nrow(izsler)),text=izsler$ID)
+key<-na.omit(key)
+custom.stopwords<-c(stopwords('english'))
+corpus <- VCorpus(DataframeSource(key))
+corpus<-clean.corpus(corpus)
+
+tdm<-TermDocumentMatrix(corpus, control=list(weighting=weightTf))
+tdm<-removeSparseTerms(tdm,  sparse=0.99)
+tdm.key.m<-as.matrix(tdm)
+
+term.freq<-rowSums(tdm.key.m)
+freq.df<-data.frame(word=names(term.freq), frequency=term.freq)
+freq.df<-freq.df[order(freq.df[,2], decreasing=T),]
+freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
+
+ggplot(freq.df[1:50,], aes(x=word, y=frequency))+geom_bar(stat = "identity", fill='darkred')+
+  coord_flip()+theme_gdocs()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)
 
 
 
@@ -89,17 +129,28 @@ prod %>%
   scale_x_continuous(breaks=c(2005:2018))
 
 
+izsler %>% 
+  filter(PY>=2005 & PY<2019) %>% 
+  group_by(PY) %>% 
+  summarise(n=n()) %>% 
+  ggplot(aes(x=PY, y=n))+geom_point(stat = "identity")+
+  geom_line(stat="identity")+
+  labs(x="Anno di pubblicazione", y="Numero articoli pubblicati")+
+  scale_x_continuous(breaks=c(2005:2018))
+
+
+
   ##################################
 
 
 izsler %>% 
-  filter(PY==2005) %>% 
+  filter(PY>=2005 & PY<=2018) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   top_n(10, n) %>% 
-  arrange(desc(n)) %>% 
+  arrange(n) %>% 
   mutate(SO = factor(SO, unique(SO))) %>%
-  ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()
+  ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity", fill="red")+coord_flip()
 
 izsve %>% 
   filter(PY>2005) %>% 

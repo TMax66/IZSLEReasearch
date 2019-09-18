@@ -6,6 +6,7 @@ ui <- dashboardPage(
     sidebarMenu(
       
       menuItem("Dashboard", tabName = "risp", icon = icon("dashboard")),
+      menuItem("Ricerca Corrente", tabName = "corr", icon = icon("th")),
       menuItem("Consulta database", tabName = "dati", icon = icon("th"))#,
       #menuItem("Text mining Analysis", tabName="tm", icon = icon("edit"))
     )
@@ -38,7 +39,38 @@ ui <- dashboardPage(
         ))
         ,
       
-     
+      tabItem(
+        tabName = "corr",
+        tabBox( width = 12,
+                tabPanel("Ricerca Corrente",
+        fluidRow(
+          column(3,br(),br(),br(),
+                 valueBoxOutput("capo", width = NULL),
+                 valueBoxOutput("uo", width = NULL),
+                 valueBoxOutput("solo", width = NULL)), 
+          
+          column(9,
+          
+          box(title="Responsabili scientifici", width = 9, 
+              solidHeader = TRUE, status = "primary",
+              plotOutput("rs", height=650)
+          ))
+        )
+      ), 
+      tabPanel("Tematiche", 
+               fluidRow(
+                 column(8,
+                        box(title="Frequenza dei termini usati nei titoli (top 30)", 
+                            status = "primary",solidHeader = TRUE, 
+                        plotOutput("w", height=600))
+                        )
+               ))
+      
+      
+      
+      )),
+
+      
    
       tabItem(
         tabName = "dati",
