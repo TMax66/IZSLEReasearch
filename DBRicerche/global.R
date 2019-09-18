@@ -59,24 +59,24 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 # ######TOPICS MODEL#####
 
-dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
-burnin <- 4000
-iter <- 2000
-thin <- 500
-seed <-list(2003,5,63,100001,765)
-nstart <- 5
-best <- TRUE
-k <- 5
-
-ldaOut <-LDA(dtm,k, method="Gibbs",
-             control=list(nstart=nstart,
-                          seed = seed, best=best,
-                          burnin = burnin, iter = iter, thin=thin))
-
-topics <- tidy(ldaOut, matrix = "beta")
-ldaOut.topics <- as.matrix(topics(ldaOut))
-
-ldaOut.terms <- as.matrix(terms(ldaOut,10))
+# dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
+# burnin <- 4000
+# iter <- 2000
+# thin <- 500
+# seed <-list(2003,5,63,100001,765)
+# nstart <- 5
+# best <- TRUE
+# k <- 5
+# 
+# ldaOut <-LDA(dtm,k, method="Gibbs",
+#              control=list(nstart=nstart,
+#                           seed = seed, best=best,
+#                           burnin = burnin, iter = iter, thin=thin))
+# 
+# topics <- tidy(ldaOut, matrix = "beta")
+# ldaOut.topics <- as.matrix(topics(ldaOut))
+# 
+# ldaOut.terms <- as.matrix(terms(ldaOut,10))
 # 
 # 
 
