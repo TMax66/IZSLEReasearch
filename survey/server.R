@@ -1,4 +1,4 @@
-﻿
+
 server <- function(input, output, session) {
   
   
@@ -83,7 +83,7 @@ server <- function(input, output, session) {
     server= FALSE,class = 'cell-border stripe',
     rownames = FALSE, options = list(
       dom = 'Bfrtip',paging = TRUE,autoWidth = TRUE,
-      pageLength = 10)
+      pageLength = 50)
   )
   
   

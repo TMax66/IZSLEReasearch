@@ -9,6 +9,7 @@ library(tidytext)
 library(tm)
 library(ggthemes)
 library(ggpubr)
+library(ldatuning)
 
 ds <- read_excel("prizsler.xlsx")
 
@@ -38,7 +39,8 @@ title<-data.frame(doc_id=seq(1:nrow(ds2)),text=ds2$Titolo)
 custom.stopwords<-c(stopwords('italian'),"valutazione", "studio","animali", "animale","punto",
                     "messa","progetto","ricerca", "finanziamento", "specie", "test", "riferimento",
                     "particolare", "spp", "agenti", "mediante", "ceppi", "utilizzo", "protocolli",
-                    "analisi")
+                    "analisi", "sistema", "applicazione","origine", "indagine", "malattie", "malattia", "prova",
+                    "strategie", "fattori","potenziale", "campo", "campioni", "presenza", "procedure")
 corpus <- VCorpus(DataframeSource(title))
 corpus<-clean.corpus(corpus)
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "prodotti", replacement = "produzione")
@@ -47,6 +49,17 @@ corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suini", replacement
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "diagnostici", replacement = "diagnosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "allevamenti", replacement = "allevamento")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "epidemiologiche", replacement = "epidemiologia")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "epidemiologica", replacement = "epidemiologia")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "avium", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "subsp", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "bovini", replacement = "bovina")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "infezioni", replacement = "infezione")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "paratubercolosis", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "map", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "italia", replacement = "nazionale")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodi", replacement = "metodologie")
 tdm<-TermDocumentMatrix(corpus, control=list(weighting=weightTf))
 tdm<-removeSparseTerms(tdm,  sparse=0.99)
 tdm.title.m<-as.matrix(tdm)
@@ -59,26 +72,74 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 # ######TOPICS MODEL#####
 
-# dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
-# burnin <- 4000
-# iter <- 2000
-# thin <- 500
-# seed <-list(2003,5,63,100001,765)
-# nstart <- 5
-# best <- TRUE
-# k <- 5
+dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
+
+
+# result <- FindTopicsNumber(
+#   dtm,
+#   topics = seq(from = 2, to = 30, by = 1),
+#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+#   method = "Gibbs",
+#   control = list(seed = 77),
+#   mc.cores = 2L,
+#   verbose = TRUE
+# )
+# FindTopicsNumber_plot(result)
+
+
+
+burnin <- 4000
+iter <- 2000
+thin <- 500
+seed <-list(2003,5,63,100001,765)
+nstart <- 5
+best <- TRUE
+k <- 10
 # 
-# ldaOut <-LDA(dtm,k, method="Gibbs",
-#              control=list(nstart=nstart,
-#                           seed = seed, best=best,
-#                           burnin = burnin, iter = iter, thin=thin))
+ldaOut <-LDA(dtm,k, method="Gibbs",
+             control=list(nstart=nstart,
+                          seed = seed, best=best,
+                          burnin = burnin, iter = iter, thin=thin))
 # 
-# topics <- tidy(ldaOut, matrix = "beta")
+topics <- tidy(ldaOut, matrix = "beta")
+ap_top_terms <- ap_topics %>%
+  group_by(topic) %>%
+  top_n(5, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+# 
+ap_top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(term, beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  scale_x_reordered()
+# 
+ap_documents <- tidy(ldaOut, matrix = "gamma")
+# 
+# 
+# tidy(dtm) %>%
+#   filter(document == 4) %>%
+#   arrange(desc(count))
+# 
+# 
+# 
+# x <- topics(ldaOut)
+# new.df <- data.frame('response'=names(x), 'topic'=x, row.names=NULL)
+# 
+# new.df %>% 
+#   group_by(topic) %>% 
+#   summarise(n=n())
+# 
+# 
+# 
+# 
 # ldaOut.topics <- as.matrix(topics(ldaOut))
 # 
-# ldaOut.terms <- as.matrix(terms(ldaOut,10))
-# 
-# 
+# ldaOut.terms <- as.matrix(terms(ldaOut,20))
+#
+
 
 
 # 
