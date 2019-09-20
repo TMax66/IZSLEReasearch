@@ -57,17 +57,34 @@ ui <- dashboardPage(
           ))
         )
       ), 
-      tabPanel("Tematiche", 
+      tabPanel("Topic", 
                fluidRow(
-                 column(8,
-                        box(title="Frequenza dei termini usati nei titoli (top 30)", 
-                            status = "primary",solidHeader = TRUE, 
-                        plotOutput("w", height=600))
-                        )
-               ))
-      
-      
-      
+                 box(title="Termini maggiormente usati nei titoli (top 20)",
+                            status = "primary",solidHeader = TRUE,
+                        plotOutput("w",height = 500))
+                        ,
+                 box(title="Word Cloud", status="danger", solidHeader=TRUE, 
+                           sliderInput("size","Cloud Size", min=0.3, max=1,value = 0.4), 
+                           wordcloud2Output('wordcloud2'))
+               ), 
+               
+               fluidRow(
+                 
+                 box(title="Network termini", width=12, status = "primary",solidHeader = TRUE,
+                     plotOutput("net", height = 800))
+                 
+               )
+               
+               
+      )
+      # tabPanel("Topics Model",
+      #          fluidRow(
+      #            
+      #            
+      #          )
+      # 
+      # 
+      # 
       )),
 
       
@@ -84,7 +101,7 @@ ui <- dashboardPage(
       )
   )
 )
-      
+
       
       
 

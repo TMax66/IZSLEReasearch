@@ -7,6 +7,8 @@ library(topicmodels)
 library(tidytext)
 library(tm)
 library(ggthemes)
+library(wordcloud2)
+library(wordcloud)
 
 
 
@@ -16,8 +18,9 @@ ds <-gs_read(dati, ws="Risposte del modulo 1" )
   
 
 ####TEXT MINING#####
-ds<-na.omit(ds)
 names(ds)[7]<-"risposta"
+ds<- ds %>% drop_na(risposta)
+
 
 
 tryTolower<-function(x){
@@ -40,11 +43,13 @@ clean.corpus<-function(corpus){
 risp<-data.frame(doc_id=seq(1:nrow(ds)),text=ds$risposta)
 custom.stopwords<-c(stopwords('italian'), "ricerca", "progetti","attività","modo", "avere","dopo",
                     "argomenti","punto","altri", "altre", "finanziamenti", "rsr", "soprattutto", "parte",
-                    "izsler")
+                    "izsler", "solo", "essere", "figure", "livello", "dovrebbe", 
+"sempre", "potrebbe", "possibilità")
 corpus <- VCorpus(DataframeSource(risp))
 corpus<-clean.corpus(corpus)
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "percorsi", replacement = "percorso")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "partecipare", replacement = "partecipazione")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "borsista", replacement = "borsisti")
 tdm<-TermDocumentMatrix(corpus, control=list(weighting=weightTf))
 tdm<-removeSparseTerms(tdm,  sparse=0.99)
 tdm.risp.m<-as.matrix(tdm)
@@ -54,7 +59,21 @@ freq.df<-data.frame(word=names(term.freq), frequency=term.freq)
 freq.df<-freq.df[order(freq.df[,2], decreasing=T),]
 freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
-ggplot(freq.df[1:50,], aes(x=word, y=frequency))+geom_bar(stat = "identity", fill='darkred')+
-  coord_flip()+theme_gdocs()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)
+freq.df %>% 
+  top_n(30,frequency ) %>% 
+  ggplot(aes(x=reorder(word, frequency), y=frequency))+geom_bar(stat = "identity", fill='steelblue3')+
+  coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)+
+  theme(axis.text=element_text(size=12))+labs(x="termini", y="frequenza")
+
+freq.term<-findFreqTerms(tdm, lowfreq = 15)
+
+plot(tdm, term=freq.term, corThreshold = 0.2,weighting=T)
 
 
+m<-tdm.risp.m
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+
+wordcloud2(d, size=0.5)
+
+comparison.cloud(d, title.size=1,max.words=40,colors = brewer.pal(5,"Set1"))

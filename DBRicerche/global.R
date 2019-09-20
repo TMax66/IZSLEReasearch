@@ -10,6 +10,7 @@ library(tm)
 library(ggthemes)
 library(ggpubr)
 library(ldatuning)
+library(wordcloud2)
 
 ds <- read_excel("prizsler.xlsx")
 
@@ -45,6 +46,8 @@ corpus <- VCorpus(DataframeSource(title))
 corpus<-clean.corpus(corpus)
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "prodotti", replacement = "produzione")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodiche", replacement = "metodi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodo", replacement = "metodi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodica", replacement = "metodi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suini", replacement = "suino")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "diagnostici", replacement = "diagnosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "allevamenti", replacement = "allevamento")
@@ -59,7 +62,10 @@ corpus<-tm_map(corpus, content_transformer(gsub), pattern = "infezioni", replace
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "paratubercolosis", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "map", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "italia", replacement = "nazionale")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodi", replacement = "metodologie")
+
+
+
+
 tdm<-TermDocumentMatrix(corpus, control=list(weighting=weightTf))
 tdm<-removeSparseTerms(tdm,  sparse=0.99)
 tdm.title.m<-as.matrix(tdm)
@@ -70,53 +76,132 @@ freq.df<-freq.df[order(freq.df[,2], decreasing=T),]
 freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 
-# ######TOPICS MODEL#####
 
+
+####WORD CLOUD###
+m<-tdm.title.m
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+
+####WORD NETWORK####
+freq.term<-findFreqTerms(tdm, lowfreq = 20)
+
+
+
+
+# ###########NETWORK#############
+#
+# freq.term<-findFreqTerms(tdm, lowfreq = 10)
+# 
+# plot(tdm, term=freq.term, corThreshold = 0.2,weighting=T)
+# 
+# 
+# # ######TOPICS MODEL#####
 dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
 
-
-# result <- FindTopicsNumber(
-#   dtm,
-#   topics = seq(from = 2, to = 30, by = 1),
-#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-#   method = "Gibbs",
-#   control = list(seed = 77),
-#   mc.cores = 2L,
-#   verbose = TRUE
-# )
-# FindTopicsNumber_plot(result)
-
-
-
-burnin <- 4000
-iter <- 2000
-thin <- 500
-seed <-list(2003,5,63,100001,765)
-nstart <- 5
-best <- TRUE
-k <- 10
+# determina il numero di topics###
+# burnin <- 1000
+# iter <- 1000
+# keep <- 50
+# # # determining k (the number of topics)
+# # seqk <- seq(2,100,1)
+# # system.time(fitted_many <- lapply(seqk,function(k) topicmodels::LDA(dtm,k=k,
+# #                                                                     method="Gibbs",control=list(burnin=burnin,iter=iter,keep=keep))))
+# # # extract logliks from each topic
+# # logLiks_many <- lapply(fitted_many, function(L) L@logLiks[-c(1:(burnin/keep))])
+# # # compute harmonicMean
+# # harmonicMean <- function(logLikelihoods, precision = 2000L) {
+# #   llMed <- median(logLikelihoods)
+# #   as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
+# #                                        prec = precision) + llMed))))
+# # }
+# # hm_many <- sapply(logLiks_many, function(h) harmonicMean(h))
+# # ldaplot <- ggplot(data.frame(seqk, hm_many), aes(x=seqk, y=hm_many)) + geom_path(lwd=1.5) +
+# #   theme(text = element_text(family= NULL),
+# #         axis.title.y=element_text(vjust=1, size=16),
+# #         axis.title.x=element_text(vjust=-.5, size=16),
+# #         axis.text=element_text(size=16),
+# #         plot.title=element_text(size=20)) +
+# #   xlab('Number of Topics') +
+# #   ylab('Harmonic Mean') +
+# #   ggtitle("Determining the number of topics")
+# # k <- seqk[which.max(hm_many)]
 # 
-ldaOut <-LDA(dtm,k, method="Gibbs",
-             control=list(nstart=nstart,
-                          seed = seed, best=best,
-                          burnin = burnin, iter = iter, thin=thin))
+# k<-13
 # 
-topics <- tidy(ldaOut, matrix = "beta")
-ap_top_terms <- ap_topics %>%
-  group_by(topic) %>%
-  top_n(5, beta) %>%
-  ungroup() %>%
-  arrange(topic, -beta)
+# seedNum <- 50
+# system.time(ldaOut <- topicmodels::LDA(dtm,k = k,method="Gibbs",
+#                                        control=list(burnin=burnin,keep=keep,iter=2000,seed=seedNum)))
 # 
-ap_top_terms %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%
-  ggplot(aes(term, beta, fill = factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  scale_x_reordered()
 # 
-ap_documents <- tidy(ldaOut, matrix = "gamma")
+# 
+# 
+# 
+# 
+# ldaOut.terms <- as.matrix(terms(ldaOut,10))
+# ldaOut.terms[1:10,]
+# 
+# topics_beta <- tidy(ldaOut,matrix="beta")
+# 
+# topic1_5 <- topics_beta %>%
+#   group_by(term) %>%
+#   top_n(1,beta) %>%
+#   group_by(topic) %>%
+#   top_n(10,beta) %>%
+#   filter(topic < 6) %>%
+#   acast(term ~ topic,value.var="beta",fill=0) %>%
+#   comparison.cloud(title.size=1,max.words=40,colors = brewer.pal(5,"Set1"))
+# 
+# 
+# 
+# ML.topics <- topicmodels::topics(ldaOut, 1)
+# ML.terms <- as.data.frame(topicmodels::terms(ldaOut, 30), stringsAsFactors = FALSE)
+# topicTerms <- tidyr::gather(ML.terms, Topic)
+# topicTerms <- cbind(topicTerms, Rank = rep(1:30))
+# topTerms <- dplyr::filter(topicTerms, Rank < 4)
+# topTerms <- dplyr::mutate(topTerms, Topic = stringr::word(Topic, 2))
+# topTerms$Topic <- as.numeric(topTerms$Topic)
+# topicLabel <- data.frame()
+# for (i in 1:13){
+#   z <- dplyr::filter(topTerms, Topic == i)
+#   l <- as.data.frame(paste(z[1,2], z[2,2], sep = " " ), stringsAsFactors = FALSE)
+#   topicLabel <- rbind(topicLabel, l)
+#   
+# }
+# colnames(topicLabel) <- c("Label")
+# topicLabel
+
+
+
+# burnin <- 4000
+# iter <- 2000
+# thin <- 500
+# seed <-list(2003,5,63,100001,765)
+# nstart <- 5
+# best <- TRUE
+# k <- 10
+# # 
+# ldaOut <-LDA(dtm,k, method="Gibbs",
+#              control=list(nstart=nstart,
+#                           seed = seed, best=best,
+#                           burnin = burnin, iter = iter, thin=thin))
+# # 
+# topics <- tidy(ldaOut, matrix = "beta")
+# ap_top_terms <- ap_topics %>%
+#   group_by(topic) %>%
+#   top_n(5, beta) %>%
+#   ungroup() %>%
+#   arrange(topic, -beta)
+# # 
+# ap_top_terms %>%
+#   mutate(term = reorder_within(term, beta, topic)) %>%
+#   ggplot(aes(term, beta, fill = factor(topic))) +
+#   geom_col(show.legend = FALSE) +
+#   facet_wrap(~ topic, scales = "free") +
+#   coord_flip() +
+#   scale_x_reordered()
+# # 
+# ap_documents <- tidy(ldaOut, matrix = "gamma")
 # 
 # 
 # tidy(dtm) %>%

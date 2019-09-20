@@ -184,14 +184,20 @@ server <- function(input, output, session) {
     
   )
   
-  output$w<-renderPlot(
+  output$w<-renderPlot({   
     freq.df %>% 
-      top_n(30,frequency ) %>% 
+      top_n(20,frequency ) %>% 
       ggplot(aes(x=reorder(word, frequency), y=frequency))+geom_bar(stat = "identity", fill='steelblue3')+
       coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)+
       theme(axis.text=element_text(size=12))+labs(x="termini", y="frequenza")
-      
+  }
   )
   
+  output$wordcloud2 <- renderWordcloud2({
+    wordcloud2(d, size=input$size)
+  })
   
+  output$net<-renderPlot({
+  plot(tdm, term=freq.term, corThreshold = 0.1,weighting=T)
+  })
 }
