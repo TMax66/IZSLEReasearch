@@ -184,20 +184,49 @@ server <- function(input, output, session) {
     
   )
   
-  output$w<-renderPlot({   
+  output$w<-renderPlot(
     freq.df %>% 
       top_n(20,frequency ) %>% 
       ggplot(aes(x=reorder(word, frequency), y=frequency))+geom_bar(stat = "identity", fill='steelblue3')+
       coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)+
       theme(axis.text=element_text(size=12))+labs(x="termini", y="frequenza")
-  }
+  
   )
   
-  output$wordcloud2 <- renderWordcloud2({
-    wordcloud2(d, size=input$size)
-  })
+  # output$wordcloud2 <- renderWordcloud2({
+  #   wordcloud2(d, size=input$size)
+  #})
   
-  output$net<-renderPlot({
-  plot(tdm, term=freq.term, corThreshold = 0.1,weighting=T)
-  })
+  ####cluster###
+  tdm2<-reactive({removeSparseTerms(tdm, sparse=input$sparse)})
+    output$clust<-renderPlot({   
+    hc<-hclust(dist(tdm2(), method = "euclidean"), method="complete")
+    plot(hc, yaxt="n",main="", hang=0.8, cex=0.8)}
+   
+  )
+    
+    associations<-reactive({ 
+    associations<-findAssocs(tdm,input$term, input$ass)
+    associations<-as.data.frame(associations)
+    associations$terms<-row.names(associations)
+    associations$terms<-factor(associations$terms, levels = associations$terms)})
+    
+    
+    output$asso<-renderPlot({ 
+      associations() %>% 
+    ggplot( aes(y=terms))+
+      geom_point(aes(x=input$term), data=associations, size=1)+
+      theme_gdocs()+geom_text(aes(x=input$term, label=input$term),
+                              colour="darkred", hjust=-.25, size=3)+
+      theme(text=element_text(size=8),
+            axis.title.y = element_blank())
+    })
+  
+  
+  
+  
+  
+  
+  
+  
 }

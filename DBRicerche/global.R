@@ -11,7 +11,11 @@ library(ggthemes)
 library(ggpubr)
 library(ldatuning)
 library(wordcloud2)
-
+library(igraph)
+library(dendextend)
+library(circlize)
+library(shinyBS)
+library(wordcloud)
 ds <- read_excel("prizsler.xlsx")
 
 ds2<-ds %>% 
@@ -49,6 +53,7 @@ corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodiche", replace
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodo", replacement = "metodi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodica", replacement = "metodi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suini", replacement = "suino")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suina", replacement = "suino")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "diagnostici", replacement = "diagnosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "allevamenti", replacement = "allevamento")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
@@ -78,26 +83,55 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 
 
+associations<-findAssocs(tdm,'virus', 0.2)
+associations<-as.data.frame(associations)
+associations$terms<-row.names(associations)
+associations$terms<-factor(associations$terms, levels =associations$terms)
+
+ggplot(associations, aes(y=terms))+
+  geom_point(aes(x=virus
+                 ), data=associations, size=1)+
+  theme_gdocs()+geom_text(aes(x=virus, label=virus),
+                          colour="darkred", hjust=-.25, size=5)+
+  theme(text=element_text(size=8),
+        axis.title.y = element_blank())
+
+
+
 ####WORD CLOUD###
-m<-tdm.title.m
-v <- sort(rowSums(m),decreasing=TRUE)
-d <- data.frame(word = names(v),freq=v)
+# m<-tdm.title.m
+# v <- sort(rowSums(m),decreasing=TRUE)
+# d <- data.frame(word = names(v),freq=v)
+
+
+
 
 ####WORD NETWORK####
-freq.term<-findFreqTerms(tdm, lowfreq = 20)
+# freq.term<-findFreqTerms(tdm, lowfreq = 20)
+# par(cex=1.5)
+# 
+# attrs <- list(node=list(shape="ellipse", fixedsize=FALSE))
+
+
+
+###alternative word network###
+
+
+
+
 
 
 
 
 # ###########NETWORK#############
 #
-# freq.term<-findFreqTerms(tdm, lowfreq = 10)
+# freq.term<-findFreqTerms(tdm, lowfreq = 20)
 # 
 # plot(tdm, term=freq.term, corThreshold = 0.2,weighting=T)
 # 
 # 
 # # ######TOPICS MODEL#####
-dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
+#dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
 
 # determina il numero di topics###
 # burnin <- 1000
