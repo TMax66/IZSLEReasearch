@@ -193,9 +193,9 @@ server <- function(input, output, session) {
   
   )
   
-  # output$wordcloud2 <- renderWordcloud2({
-  #   wordcloud2(d, size=input$size)
-  #})
+  output$wordcloud2 <- renderWordcloud2({
+    wordcloud2(pr_words, size=input$size)
+  })
   
   ####cluster###
   tdm2<-reactive({removeSparseTerms(tdm, sparse=input$sparse)})
@@ -205,25 +205,34 @@ server <- function(input, output, session) {
    
   )
     
-    associations<-reactive({ 
-    associations<-findAssocs(tdm,input$term, input$ass)
-    associations<-as.data.frame(associations)
-    associations$terms<-row.names(associations)
-    associations$terms<-factor(associations$terms, levels = associations$terms)})
+    ass<-reactive({    
+      a<-findAssocs(tdm, input$term, input$ass)
+      a<-data.frame(a)
+      a$terms<-row.names(a)
+      a$terms<-factor(a$terms, levels = a$terms)
+      print(a)})
     
     
     output$asso<-renderPlot({ 
-      associations() %>% 
-    ggplot( aes(y=terms))+
-      geom_point(aes(x=input$term), data=associations, size=1)+
-      theme_gdocs()+geom_text(aes(x=input$term, label=input$term),
-                              colour="darkred", hjust=-.25, size=3)+
-      theme(text=element_text(size=8),
-            axis.title.y = element_blank())
+      ggplot(ass(),  aes(y=terms))+
+      geom_point(aes(x=ass()[,1]), data=ass(), size=1)+labs(x=input$term)+
+       geom_text(aes(x= ass()[,1], label=ass()[,1]),
+                                colour="darkred", hjust=-.25, size=5)+
+        theme(text=element_text(size=10),
+              axis.title.y = element_blank())
     })
   
   
-  
+    # ggplot(associations, aes(y=terms))+
+    #   geom_point(aes(x=virus
+    #   ), data=associations, size=1)+
+    #   theme_gdocs()+geom_text(aes(x=virus, label=virus),
+    #                           colour="darkred", hjust=-.25, size=5)+
+    #   theme(text=element_text(size=8),
+    #         axis.title.y = element_blank())
+    # 
+    # 
+    
   
   
   

@@ -70,7 +70,7 @@ ui <- dashboardPage(
         tabBox( width = 12,
                
                 #####panel ricerca corrente
-      tabPanel("Ricerca Corrente",
+      tabPanel("Ruolo dell'IZSLER",
         fluidRow(
           column(3,br(),br(),br(),
                  valueBoxOutput("capo", width = NULL),
@@ -80,7 +80,7 @@ ui <- dashboardPage(
           column(9,
           
           box(title="Responsabili scientifici e coinvolgimento dell'IZSLER", width = 9, 
-              solidHeader = TRUE, status = "primary",
+              solidHeader = TRUE, status = "primary", background = "black",
               plotOutput("rs", height=650)
           ))
         )
@@ -91,26 +91,30 @@ ui <- dashboardPage(
                fluidRow(
                
                  box(title="Termini maggiormente usati nei titoli (top 20)",
-                            status = "primary",solidHeader = TRUE,
+                            status = "primary",solidHeader = TRUE,height=600, background = "black",
                         plotOutput("w")),
                  
-                 box(title="Cluster termini", status = "primary",solidHeader = TRUE,
-                     sliderInput("sparse","sparse", min=0.8, max=0.99,value = 0.98),
-                     plotOutput("clust", height = 600 )),
+                 box(title="Cluster termini", status = "primary",solidHeader = TRUE,height=600, background = "black",
+                     sliderInput("sparse","sparse", min=0.8, max=0.99,value = 0.956),
+                     plotOutput("clust")),
                  
                  
-                 box( title="Associazione tra termini", status = "primary",solidHeader = TRUE,   
-                      textInput("term", "Termine", "virus"),
+                 box( title="Associazione tra termini", status = "primary",solidHeader = TRUE, height=650, 
+                       background = "black",
+                      textInput("term", "Inserisci una parola chiave", "virus"),
                       sliderInput("ass", "correlazione", min=0.1, max=0.5, value=0.2),
-                      plotOutput("asso", height = 600 ))
+                       plotOutput("asso" ))
+                 
+                 # 
+                 # box(title="Word Cloud", status="danger", solidHeader=TRUE,height=650, 
+                 #                sliderInput("size","Cloud Size", min=0.3, max=1,value = 0.4), 
+                 #                wordcloud2Output('wordcloud2'))
                    
                    
                    )
                  
                  
-                 # box(title="Word Cloud", width = NULL, status="danger", solidHeader=TRUE,
-                 #           sliderInput("size","Cloud Size", min=0.3, max=1,value = 0.4), 
-                 #           wordcloud2Output('wordcloud2'))
+                 
                )), 
       hr(), br()
       

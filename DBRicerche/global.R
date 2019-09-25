@@ -13,9 +13,12 @@ library(ldatuning)
 library(wordcloud2)
 library(igraph)
 library(dendextend)
-library(circlize)
-library(shinyBS)
+#library(circlize)
+#library(shinyBS)
 library(wordcloud)
+library(Rmpfr)
+library(reshape2)
+rm(list=ls())
 ds <- read_excel("prizsler.xlsx")
 
 ds2<-ds %>% 
@@ -45,16 +48,17 @@ custom.stopwords<-c(stopwords('italian'),"valutazione", "studio","animali", "ani
                     "messa","progetto","ricerca", "finanziamento", "specie", "test", "riferimento",
                     "particolare", "spp", "agenti", "mediante", "ceppi", "utilizzo", "protocolli",
                     "analisi", "sistema", "applicazione","origine", "indagine", "malattie", "malattia", "prova",
-                    "strategie", "fattori","potenziale", "campo", "campioni", "presenza", "procedure")
+                    "strategie", "fattori","potenziale", "campo", "campioni", "presenza", "procedure", "nuovi", "attraverso")
 corpus <- VCorpus(DataframeSource(title))
 corpus<-clean.corpus(corpus)
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "prodotti", replacement = "produzione")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodiche", replacement = "metodi")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodo", replacement = "metodi")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodica", replacement = "metodi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "\\b(metodiche|metodica|metodo)\\b", replacement = "metodi")
+# corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodiche", replacement = "metodi")
+# corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodo", replacement = "metodi")
+# corpus<-tm_map(corpus, content_transformer(gsub), pattern = "metodica", replacement = "metodi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suini", replacement = "suino")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "suina", replacement = "suino")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "diagnostici", replacement = "diagnosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "\\b(diagnostiche|diagnostici|diagnostico|diagnostica)\\b", replacement = "diagnosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "allevamenti", replacement = "allevamento")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "epidemiologiche", replacement = "epidemiologia")
@@ -64,7 +68,7 @@ corpus<-tm_map(corpus, content_transformer(gsub), pattern = "subsp", replacement
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "bovini", replacement = "bovina")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "infezioni", replacement = "infezione")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "paratubercolosis", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "paratuberculosis", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "map", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "italia", replacement = "nazionale")
 
@@ -83,38 +87,32 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 
 
-associations<-findAssocs(tdm,'virus', 0.2)
-associations<-as.data.frame(associations)
-associations$terms<-row.names(associations)
-associations$terms<-factor(associations$terms, levels =associations$terms)
-
-ggplot(associations, aes(y=terms))+
-  geom_point(aes(x=virus
-                 ), data=associations, size=1)+
-  theme_gdocs()+geom_text(aes(x=virus, label=virus),
-                          colour="darkred", hjust=-.25, size=5)+
-  theme(text=element_text(size=8),
-        axis.title.y = element_blank())
-
-
 
 ####WORD CLOUD###
 # m<-tdm.title.m
 # v <- sort(rowSums(m),decreasing=TRUE)
 # d <- data.frame(word = names(v),freq=v)
 
+# dtm <- DocumentTermMatrix(corpus)
+# dtm_td <- tidy(dtm)
+# dtm_td %>%
+#   count(term, sort = TRUE) %>%
+#   filter(n > 20) %>%
+#   mutate(word = reorder(term, n)) %>%
+#   ggplot(aes(word, n)) +
+#   geom_col(fill="yellow",col="black") +
+#   xlab(NULL) +
+#   coord_flip() +
+#   
+#   theme(plot.title = element_text(size = 10, face = "bold")) + theme_bw()
+
+# pr_words <- dtm_td %>%
+#   count(term,sort=TRUE) %>%
+#   filter(n >= 10)
 
 
 
-####WORD NETWORK####
-# freq.term<-findFreqTerms(tdm, lowfreq = 20)
-# par(cex=1.5)
-# 
-# attrs <- list(node=list(shape="ellipse", fixedsize=FALSE))
 
-
-
-###alternative word network###
 
 
 
@@ -131,42 +129,141 @@ ggplot(associations, aes(y=terms))+
 # 
 # 
 # # ######TOPICS MODEL#####
-#dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
-
-# determina il numero di topics###
+# dtm<-DocumentTermMatrix(corpus, control=list(weighting=weightTf))
+# term_tfidf <- tapply(dtm$v/slam::row_sums(dtm)[dtm$i], dtm$j, mean) *
+#   log2(tm::nDocs(dtm)/slam::col_sums(dtm > 0))
+# 
+# 
+# dtm <- dtm[,term_tfidf >= 0.7015]
+# summary(slam::col_sums(dtm))
+# 
+# 
+# rowTotals<-apply(dtm,1,sum) #running this line takes time
+# empty.rows<-dtm[rowTotals==0,]$dimnames[1][[1]]
+# corpus<-corpus[-as.numeric(empty.rows)]
+# dtm <- DocumentTermMatrix(corpus) 
+# # # determina il numero di topics###
 # burnin <- 1000
 # iter <- 1000
 # keep <- 50
-# # # determining k (the number of topics)
-# # seqk <- seq(2,100,1)
-# # system.time(fitted_many <- lapply(seqk,function(k) topicmodels::LDA(dtm,k=k,
-# #                                                                     method="Gibbs",control=list(burnin=burnin,iter=iter,keep=keep))))
-# # # extract logliks from each topic
-# # logLiks_many <- lapply(fitted_many, function(L) L@logLiks[-c(1:(burnin/keep))])
-# # # compute harmonicMean
-# # harmonicMean <- function(logLikelihoods, precision = 2000L) {
-# #   llMed <- median(logLikelihoods)
-# #   as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
-# #                                        prec = precision) + llMed))))
-# # }
-# # hm_many <- sapply(logLiks_many, function(h) harmonicMean(h))
-# # ldaplot <- ggplot(data.frame(seqk, hm_many), aes(x=seqk, y=hm_many)) + geom_path(lwd=1.5) +
-# #   theme(text = element_text(family= NULL),
-# #         axis.title.y=element_text(vjust=1, size=16),
-# #         axis.title.x=element_text(vjust=-.5, size=16),
-# #         axis.text=element_text(size=16),
-# #         plot.title=element_text(size=20)) +
-# #   xlab('Number of Topics') +
-# #   ylab('Harmonic Mean') +
-# #   ggtitle("Determining the number of topics")
-# # k <- seqk[which.max(hm_many)]
-# 
-# k<-13
+# # determining k (the number of topics)
+# seqk <- seq(2,100,1)
+# system.time(fitted_many <- lapply(seqk,function(k) topicmodels::LDA(dtm,k=k,
+#                                                                     method="Gibbs",control=list(burnin=burnin,iter=iter,keep=keep))))
+# # extract logliks from each topic
+# logLiks_many <- lapply(fitted_many, function(L) L@logLiks[-c(1:(burnin/keep))])
+# # compute harmonicMean
+# harmonicMean <- function(logLikelihoods, precision = 2000L) {
+#   llMed <- median(logLikelihoods)
+#   as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
+#                                        prec = precision) + llMed))))
+# }
+# hm_many <- sapply(logLiks_many, function(h) harmonicMean(h))
+# ldaplot <- ggplot(data.frame(seqk, hm_many), aes(x=seqk, y=hm_many)) + geom_path(lwd=1.5) +
+#   theme(text = element_text(family= NULL),
+#         axis.title.y=element_text(vjust=1, size=16),
+#         axis.title.x=element_text(vjust=-.5, size=16),
+#         axis.text=element_text(size=16),
+#         plot.title=element_text(size=20)) +
+#   xlab('Number of Topics') +
+#   ylab('Harmonic Mean') +
+#   ggtitle("Determining the number of topics")
+# k <- seqk[which.max(hm_many)]
+# # 
+# k<-10
 # 
 # seedNum <- 50
 # system.time(ldaOut <- topicmodels::LDA(dtm,k = k,method="Gibbs",
 #                                        control=list(burnin=burnin,keep=keep,iter=2000,seed=seedNum)))
 # 
+# ###word-topics relationships
+# ldaOut.terms <- as.matrix(terms(ldaOut,10))
+# 
+# DT::datatable(ldaOut.terms)
+# 
+# topics_beta <- tidy(ldaOut,matrix="beta")
+# top_terms <- topics_beta %>%
+#   group_by(topic) %>%
+#   top_n(5,beta) %>%
+#   ungroup() %>%
+#   arrange(topic, -beta)
+# top_terms %>%
+#   mutate(term=reorder(term,beta)) %>%
+#   ggplot(aes(term,beta,fill=factor(topic))) +
+#   geom_col(show.legend=FALSE) +
+#   facet_wrap(~ topic,scales="free") +
+#   coord_flip() +
+#   ggtitle("Probabilità dei primi 5 termini per topic")
+# 
+# 
+# 
+# topic1_5 <- topics_beta %>%
+#   group_by(term) %>%
+#   top_n(1,beta) %>%
+#   group_by(topic) %>%
+#   top_n(10,beta) %>%
+#   filter(topic < 6) %>%
+#   acast(term ~ topic,value.var="beta",fill=0) %>%
+#   comparison.cloud(title.size=1,colors = brewer.pal(5,"Set1"))
+# 
+# topics6_10 <- topics_beta %>%
+#   group_by(term) %>%
+#   top_n(1,beta) %>%
+#   group_by(topic) %>%
+#   top_n(10,beta) %>%
+#   filter(topic >= 6 & topic <= 10) %>%
+#   acast(term ~ topic,value.var="beta",fill=0) %>%
+#   comparison.cloud(title.size=1,colors = brewer.pal(5,"Set1"))
+# 
+# 
+# ML.topics <- topicmodels::topics(ldaOut, 1)
+# ML.terms <- as.data.frame(topicmodels::terms(ldaOut, 30), stringsAsFactors = FALSE)
+# topicTerms <- tidyr::gather(ML.terms, Topic)
+# topicTerms <- cbind(topicTerms, Rank = rep(1:30))
+# topTerms <- dplyr::filter(topicTerms, Rank < 4)
+# topTerms <- dplyr::mutate(topTerms, Topic = stringr::word(Topic, 2))
+# topTerms$Topic <- as.numeric(topTerms$Topic)
+# topicLabel <- data.frame()
+# for (i in 1:10){
+#   z <- dplyr::filter(topTerms, Topic == i)
+#   l <- as.data.frame(paste(z[1,2], z[2,2], z[3,2], sep = " " ), stringsAsFactors = FALSE)
+#   topicLabel <- rbind(topicLabel, l)
+#   
+# }
+# colnames(topicLabel) <- c("Label")
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# topicProbabilities <- as.data.frame(ldaOut@gamma)
+# head(topicProbabilities)
+# 
+# bgg.post <- posterior(ldaOut)
+# bgg.cor_mat <- cor(t(bgg.post[["terms"]]))
+# bgg.cor_mat[bgg.cor_mat < .001 ] <- 0
+# diag(bgg.cor_mat) <- 0
+# bgg.graph <- graph.adjacency(bgg.cor_mat, weighted=TRUE, mode="lower")
+# bgg.graph <- delete.edges(bgg.graph, E(bgg.graph)[ weight < 0.05])
+# E(bgg.graph)$edge.width <- E(bgg.graph)$weight * 50
+# V(bgg.graph)$size <- colSums(bgg.post[["topics"]])/200
+# par(mar=c(0, 0, 3, 0))
+# set.seed(110)
+# plot.igraph(bgg.graph, edge.width = E(bgg.graph)$edge.width,
+#             main = "Strength Between Topics Based On Word Probabilities",
+#             edge.color = "orange",
+#             vertex.color = "orange",
+#             vertex.frame.color = NA)
+# 
+# clp <- cluster_label_prop(bgg.graph)
+# class(clp)
+# plot(clp,bgg.graph,main="Community detection in topic network")
+# 
+
 # 
 # 
 # 
