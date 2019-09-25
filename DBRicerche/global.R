@@ -68,7 +68,7 @@ corpus<-tm_map(corpus, content_transformer(gsub), pattern = "subsp", replacement
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "virali", replacement = "virus")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "bovini", replacement = "bovina")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "infezioni", replacement = "infezione")
-corpus<-tm_map(corpus, content_transformer(gsub), pattern = "paratuberculosis", replacement = "paratubercolosi")
+corpus<-tm_map(corpus, content_transformer(gsub), pattern = "\\b(paratuberculosis|paratubercolosis)\\b", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "map", replacement = "paratubercolosi")
 corpus<-tm_map(corpus, content_transformer(gsub), pattern = "italia", replacement = "nazionale")
 

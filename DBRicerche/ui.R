@@ -67,6 +67,8 @@ ui <- dashboardPage(
 #####secondo tab item########
       tabItem(
         tabName = "corr",
+        
+        fluidPage(    
         tabBox( width = 12,
                
                 #####panel ricerca corrente
@@ -90,16 +92,18 @@ ui <- dashboardPage(
       tabPanel("Topic", 
                fluidRow(
                
-                 box(title="Termini maggiormente usati nei titoli (top 20)",
-                            status = "primary",solidHeader = TRUE,height=600, background = "black",
+                 box(title="Termini maggiormente usati nei titoli",
+                     sliderInput("nterm","# termini", min=5, max=50,value = 20),
+                            status = "primary",solidHeader = TRUE,height=650, background = "black",
                         plotOutput("w")),
                  
                  box(title="Cluster termini", status = "primary",solidHeader = TRUE,height=600, background = "black",
                      sliderInput("sparse","sparse", min=0.8, max=0.99,value = 0.956),
                      plotOutput("clust")),
+                 br(), 
                  
                  
-                 box( title="Associazione tra termini", status = "primary",solidHeader = TRUE, height=650, 
+                 box( title="Associazione tra termini", status = "primary",solidHeader = TRUE, height=650, width=9,
                        background = "black",
                       textInput("term", "Inserisci una parola chiave", "virus"),
                       sliderInput("ass", "correlazione", min=0.1, max=0.5, value=0.2),
@@ -115,7 +119,7 @@ ui <- dashboardPage(
                  
                  
                  
-               )), 
+               ))), 
       hr(), br()
       
       # actionButton("tabBut", "Word Cloud"),

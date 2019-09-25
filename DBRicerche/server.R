@@ -186,7 +186,7 @@ server <- function(input, output, session) {
   
   output$w<-renderPlot(
     freq.df %>% 
-      top_n(20,frequency ) %>% 
+      top_n(input$nterm,frequency ) %>% 
       ggplot(aes(x=reorder(word, frequency), y=frequency))+geom_bar(stat = "identity", fill='steelblue3')+
       coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)+
       theme(axis.text=element_text(size=12))+labs(x="termini", y="frequenza")
@@ -217,8 +217,8 @@ server <- function(input, output, session) {
       ggplot(ass(),  aes(y=terms))+
       geom_point(aes(x=ass()[,1]), data=ass(), size=1)+labs(x=input$term)+
        geom_text(aes(x= ass()[,1], label=ass()[,1]),
-                                colour="darkred", hjust=-.25, size=5)+
-        theme(text=element_text(size=10),
+                                colour="darkred", hjust=-.25, size=6)+
+        theme(text=element_text(size=12),
               axis.title.y = element_blank())
     })
   
