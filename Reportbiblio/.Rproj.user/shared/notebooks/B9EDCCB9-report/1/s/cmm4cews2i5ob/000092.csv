@@ -1,0 +1,100 @@
+"0","results <-biblioAnalysis(izsler, sep = "";"")"
+"0","S<-summary(results, k = 10, pause = FALSE)"
+"1","
+
+Main Information about data
+
+"
+"1"," "
+"1","Documents                             1210 
+"
+"1"," "
+"1","Sources (Journals, Books, etc.)       298 
+"
+"1"," "
+"1","Keywords Plus (ID)                    3062 
+"
+"1"," "
+"1","Author's Keywords (DE)                2281 
+"
+"1"," "
+"1","Period                                1981 - 2019 
+"
+"1"," "
+"1","Average citations per documents       16.8 
+
+"
+"1"," "
+"1","Authors                               4537 
+"
+"1"," "
+"1","Author Appearances                    10673 
+"
+"1"," "
+"1","Authors of single-authored documents  7 
+"
+"1"," "
+"1","Authors of multi-authored documents   4530 
+"
+"1"," "
+"1","Single-authored documents             9 
+
+"
+"1"," "
+"1","Documents per Author                  0.267 
+"
+"1"," "
+"1","Authors per Document                  3.75 
+"
+"1"," "
+"1","Co-Authors per Documents              8.82 
+"
+"1"," "
+"1","Collaboration Index                   3.77 
+"
+"1"," "
+"1","
+"
+"1"," "
+"1","Document types                     
+"
+"1"," "
+"1","ARTICLE                         1015 
+"
+"1"," "
+"1","ARTICLE, EARLY ACCESS           1 
+"
+"1"," "
+"1","ARTICLE, PROCEEDINGS PAPER      65 
+"
+"1"," "
+"1","BIOGRAPHICAL-ITEM               1 
+"
+"1"," "
+"1","CORRECTION                      3 
+"
+"1"," "
+"1","EDITORIAL MATERIAL              10 
+"
+"1"," "
+"1","LETTER                          28 
+"
+"1"," "
+"1","MEETING ABSTRACT                45 
+"
+"1"," "
+"1","NOTE                            13 
+"
+"1"," "
+"1","PROCEEDINGS PAPER               11 
+"
+"1"," "
+"1","REVIEW                          18 
+"
+"1"," "
+"1","
+"
+"1","
+Annual Scientific Production
+
+"

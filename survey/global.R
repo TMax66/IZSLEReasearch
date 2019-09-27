@@ -67,13 +67,13 @@ freq.df %>%
 
 freq.term<-findFreqTerms(tdm, lowfreq = 15)
 
-plot(tdm, term=freq.term, corThreshold = 0.2,weighting=T)
+#plot(tdm, term=freq.term, corThreshold = 0.2,weighting=T)
 
 
-m<-tdm.risp.m
-v <- sort(rowSums(m),decreasing=TRUE)
-d <- data.frame(word = names(v),freq=v)
-
-wordcloud2(d, size=0.5)
-
-comparison.cloud(d, title.size=1,max.words=40,colors = brewer.pal(5,"Set1"))
+# m<-tdm.risp.m
+# v <- sort(rowSums(m),decreasing=TRUE)
+# d <- data.frame(word = names(v),freq=v)
+# 
+# wordcloud2(d, size=0.5)
+# 
+# comparison.cloud(d, title.size=1,max.words=40,colors = brewer.pal(5,"Set1"))

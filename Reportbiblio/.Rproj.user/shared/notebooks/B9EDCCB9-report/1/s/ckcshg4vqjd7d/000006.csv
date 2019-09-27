@@ -1,0 +1,8 @@
+"0","izsler %>% "
+"0","  filter(PY>=2015 & PY<=2019) %>% "
+"0","  group_by(SO) %>% "
+"0","  summarise(n=n()) %>% "
+"0","  top_n(10, n) %>% "
+"0","  arrange(n) %>% "
+"0","  mutate(SO = factor(SO, unique(SO))) %>%"
+"0","  ggplot(aes(x=SO, y=n))+geom_bar(stat = ""identity"", fill=""red"")+coord_flip()"
