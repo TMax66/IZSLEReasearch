@@ -1,0 +1,938 @@
+---
+title: "Buon Anno, Signor Presidente !"
+author: "Salvino A. Salvaggio, PhD^[Questo documento è il risultato di un’analisi svolta dall’autore e rispecchia solo ed esclusivamente le posizioni dell’autore. Pertanto, questo documento non coinvolge in nessun modo, né direttamente, né indirettamente, nessuno dei datori di lavoro, passati e presente, dell’autore. L'Autore conferma di non avere nessun conflitto di interessi, di non aver mai lavorato, né in modo remunerato né a titolo gratuito, per la Presidenza della Repubblica, e di non aver mai ricevuto incarichi di nessun tipo dal Quirinale. L'Autore porta  a conoscenza dei lettori di essere stato insignito *Commendatore* dal Presidente della Repubblica con Decreto del 01 Agosto 2007.] &nbsp;^[eMail: salvino [dot] salvaggio [at] gmail [dot] com ; Sito: http://www.salvaggio.net/] &nbsp;^[L'Autore ringrazia Paolo Barbesino, Paolo Gasparini, Gaetano Palumbo per i commenti alle precedenti versioni.]"
+navtitle: "Buon Anno, Signor Presidente !"
+navlink: 
+date: "`r format(Sys.Date(), '%d %b %Y')`"
+output: markdowntemplates::skeleton
+---
+```{r global_options, include=FALSE}
+## insert libraries here
+options(mc.cores=1) # RWeka nGrams doesnt work on OSX without this setting
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(tm)
+library(wordcloud)
+library(RWeka)
+library(stringr)
+library(koRpus)
+library(changepoint)
+library(lubridate)
+#########
+
+opts_chunk$set(cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE, results = 'asis')
+options(scipen=999)
+titles.format <- theme(plot.title = element_text(face="bold", size=10), 
+             axis.title = element_text(size=9), 
+             axis.text = element_text(size=9), 
+             plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"))
+legend.bottom <- theme(legend.position='bottom', 
+             legend.title = element_text(size=7, face="bold"), 
+             legend.text = element_text(size = 7))
+```
+```{r load_and_clean}
+### load
+file.name <- '/Presidenti_31Dic/Data/MessaggiFineAnno_v4_17Jan16.txt'
+interventi <- read.table(file.name, 
+               header=T,
+               sep='|', 
+               colClasses=
+                   c('factor', 'factor', 'factor', 'factor', 'integer', 'character'), 
+               stringsAsFactors=FALSE,
+               na.strings = "NA")
+
+interventi$index <- 1:nrow(interventi)
+interventi$Presidente <- factor(interventi$Presidente,
+                      levels(interventi$Presidente)[c(8,5,1,7,6,10,3,9,2,4,11)])
+Presidenti <- levels(interventi$Presidente)
+
+interventi$wordCount <- sapply(gregexpr("\\W+", interventi$Messaggio), length) +1
+interventi$phraseCount <- sapply(gregexpr("\\.|\\. ", interventi$Messaggio), length)
+interventi$wordPhrase <- interventi$wordCount / interventi$phraseCount
+
+
+timing <-  read.table('/Presidenti_31Dic/Data/timing.txt', 
+                      header=T, sep='|', colClasses=c('integer', 'character') , 
+                      stringsAsFactors=FALSE, na.strings = "na")
+timing$Seconds <- period_to_seconds(ms(timing$Duration))
+interventi <- left_join(timing,interventi)
+interventi$wordMinute <- (interventi$wordCount / interventi$Seconds) * 60
+
+```
+
+&nbsp;
+
+All'ora in cui tanti si preparano all'aperitivo serale, arriva puntuale, ogni 31 dicembre, il messaggio di fine anno del Presidente della Repubblica. Tradizione nata insieme alla Repubblica (o quasi^[Il primo messaggio di fine anno fu del Presidente Luigi Einaudi il 31 dicembre 1948. L'On. Enrico de Nicola --eletto Presidente provvisorio il 28 giugno 1946, poi di nuovo il 26 giugno 1947 in seguito alle sue dimissioni, e di nuovo Presidente della Repubblica dal 1 gennaio 1948-- non fece nessun augurio alla nazione nei suoi due 31 dicembre al Quirinale.]), il messaggio di fine anno del Presidente ha resistito a tutte le mode ed è sopravvissuto al ricambio tecnologico dei media^[Carta stampata, diffusione radiofonica e film dell'*Istituto Luce* nei primissimi anni, diretta televisiva dal 1954 in avanti.]. Sin dall'inizio si è anche imposto come un vero e proprio *format televisivo*^[Infatti, sin dalla sua prima comparsa in TV nel 1954, la trasmissione spesso si apre con un campo largo che riprende una stanza del Quirinale per poi stringere progressivamente l'inquadratura sul busto e il viso del Presidente che parla alla nazione guardando direttamente la telecamera.] che riesce ogni anno a radunare milioni di telespettatori^[Record detenuto dal Presidente Giorgio Napolitano seguito da circa 13 milioni di telespettatori il 31 dicembre 2014.] nonostante fossero spesso presi dagli ultimi preparativi della festa.
+
+Non interessa interrogarsi in questa sede sull'opportunità o meno di tale appuntamento annuale né, tantomeno, sui motivi che favoriscono o logorano il protrarsi di questo rituale repubblicano^[Un rituale molto formalizzato, con poche sorprese o variazioni formali ma anche sostanziali, come dimostra il *text clustering* che non riesce ad isolare gruppi chiari o specifici (Charpentier, 2016).]. Va semplicemente tratto vantaggio dal fatto che `r nrow(interventi)` anni di auguri presidenziali di fine anno formano oggi un *corpus documentale* di sufficiente spessore per diventare oggetto di analisi statistica. 
+
+Da oltre un decennio, l'analisi statistica dei documenti scritti è diventata pratica comune e consolidato strumento scientifico (Jockers, 2014; Gries, 2013; Baayen, 2008). Sebbene la statistica sia completamente entrata a far parte del campo degli studi letterari, ben poco è stato finora intrapreso in Italia per indagare la produzione testuale delle Istituzioni con uguale rigore quantitativo. Questo breve articolo punta pertanto a proporre una lettura statistica dei `r nrow(interventi)` messaggi di fine anno che dal 1949 ad oggi sono stati proposti dai vari Presidenti della Repubblica succedutisi al Quirinale.
+
+&nbsp;
+
+<div style="text-align: center;" markdown="1">\*     \*     \*</div>
+
+&nbsp;
+
+### 1. Stile ed elocuzione
+
+Prima di tutto va notato che non tutti i Presidenti della Repubblica hanno rivolto sette volte gli augri di fine anno al paese. Luigi Einaudi rimase in carica 6 anni, Antonio Segni 2, Giorgio Napolitano 9 e Sergio Mattarella si è finora sottoposto una sola volta all'esercizio di San Silvestro. Se il numero totale delle parole pronunciate ne risente, il numero medio di parole per discorso fornisce una migliore indicazione sui Presidenti più sobri e quelli più loquaci. Il numero medio di parole per frase invece aiuta a capire lo stile linguistico di ogni Presidente. Quanto al numero medio di parole pronunciate al minuto permette di farsi una valida idea del ritmo e velocità di elocuzione.
+
+
+```{r stat_descr_1, fig.height=4, fig.width=9}
+flatCount <- interventi %>% 
+    group_by(Presidente) %>% 
+    summarise(
+        Auguri=n(), 
+        Totale_Parole=sum(wordCount), 
+        Parole_per_Messaggio=round(mean(wordCount),0), 
+        Parole_per_Frase=round(sum(wordCount)/sum(phraseCount),0),
+        Parole_per_Minuto=round(mean(wordMinute, na.rm=T),0)
+    ) 
+
+kable(flatCount, format='markdown', row.names = F)
+```
+
+&nbsp;
+
+```{r stat_descr_2, fig.height=5, fig.width=9}
+ggplot(interventi, aes(x=Presidente, y=wordCount, color=Presidente)) +
+    geom_boxplot() +
+    theme(legend.position='none', axis.text.x=element_text(angle=45, hjust=1)) +
+    titles.format +
+    ggtitle('Numero di parole nei messaggi di fine anno') +
+    ylab('Numero di parole')
+```
+
+
+&nbsp;
+
+
+Vale la pena evidenziare due elementi di rilievo:
+
+* i mutamenti delle forme stilistiche proprie ad ogni Presidente
+* i cambiamenti nei ritmi di elocuzione di ognuno di loro
+
+&nbsp;
+
+##### 1.1. Mutamenti stilistici
+
+Appaiono con grande chiarezza i mutamenti stilistici nel corso della storia dei messaggi di fine anno.^[Evidenziato da *change point detection* per individuare non solo uno o più eventuali cambiamenti ma anche il momento in cui avvengono (Kulkarni and al, 2015; Kennette and al, 2010.] Prima di tutto, si nota un accorciamento progressivo del periodo medio, quasi un dimezzamento: dalle circa 42 parole per frase degli anni 1949-1968 a circa 22 parole nei settennati dei Presidenti Ciampi e Scalfaro (con l'eccezione del Presidente Cossiga che usava frasi più lunghe). Ultimamente, il Presidente Napolitano ha invertito la tendenza, proponendo una lingua un pò più sofisticata fondata su periodi di lunghezza decisamente magiore dei suoi predecessori (circa 28 parole per frase). Infine, nel suo primo messaggio di fine anno, il Presidente Mattarella ha costruito il suo discorso su frasi molto brevi (17-18 parole per periodo in media), taglienti ed a forte impatto, con uno stile più giornalistico che istituzionale (assai simile ai Presidenti Ciampi, Scalfaro e Pertini).
+
+
+```{r mutamenti_stilistici, fig.height=4, fig.width=9}
+ansmean <- cpt.mean(interventi$wordPhrase, method='BinSeg', Q=4)
+mean01 <- mean(interventi$wordPhrase[1:ansmean@cpts[1]-1])
+mean02 <- mean(interventi$wordPhrase[ansmean@cpts[1]:ansmean@cpts[2]-1])
+mean03 <- mean(interventi$wordPhrase[ansmean@cpts[2]:ansmean@cpts[3]-1])
+mean04 <- mean(interventi$wordPhrase[ansmean@cpts[3]:ansmean@cpts[4]-1])
+mean05 <- mean(interventi$wordPhrase[ansmean@cpts[4]:length(interventi$wordPhrase)])
+
+ggplot(interventi, aes(x=Anno, y=wordPhrase))+ 
+    geom_segment(aes(x = Anno[1], y = mean01, xend = Anno[ansmean@cpts[1]], yend = mean01, colour = "segment")) +
+    geom_segment(aes(x = Anno[ansmean@cpts[1]], y = mean02, xend = Anno[ansmean@cpts[2]], yend = mean02, colour = "segment")) +
+    geom_segment(aes(x = Anno[ansmean@cpts[2]], y = mean03, xend = Anno[ansmean@cpts[3]], yend = mean03, colour = "segment")) +
+    geom_segment(aes(x = Anno[ansmean@cpts[3]], y = mean04, xend = Anno[ansmean@cpts[4]], yend = mean04, colour = "segment")) +
+    geom_segment(aes(x = Anno[ansmean@cpts[4]], y = mean05, xend = Anno[length(interventi$wordPhrase)], yend = mean05, colour = "segment")) +
+    geom_vline(aes(xintercept=Anno[ansmean@cpts[1]]), colour="lightblue", linetype="dashed") +
+    geom_vline(aes(xintercept=Anno[ansmean@cpts[2]]), colour="lightblue", linetype="dashed") +
+    geom_vline(aes(xintercept=Anno[ansmean@cpts[3]]), colour="lightblue", linetype="dashed") +
+    geom_vline(aes(xintercept=Anno[ansmean@cpts[4]]), colour="lightblue", linetype="dashed") +
+    geom_smooth(size=0.5, alpha=0.1) +
+    geom_point(color='#666666', size=2) +
+    theme(legend.position='none') +
+    titles.format +
+    ggtitle('Messaggi di fine anno - Mutamenti di stile') +
+    ylab('Numero di parole per frase')
+```
+
+
+&nbsp;
+
+##### 1.2. Evoluzioni elocutorie
+
+L'impatto che ha avuto in questi ultimi decenni il profondo mutamento dell'ecosistema dei media sulle forme di espressione orale e scritta in generale potrebbe portare a pensare che un simile effetto sia stato impresso al ritmo e velocità di elocuzione dei Presidenti. Il progressivo slittamento del media dominante (dalla radio e dai giornali alla tivvù all'Internet ai *social media*) nonché i cambiamenti subiti dai vari *format* che tendono a privilegiare sempre più forme brevi di comunicazione si é diffuso in modo cosí tanto pervasivo in ogni piega della società che è lecito, ed anche spontaneo, ipotizzare una simile trasformazione dell'elocuzione presidenziale che rifletta il passaggio da una *concezione sacrale* della Presidenza ad una concezione più in linea con lo *zeitgeist*. In verità, nulla di tutto questo sembra applicarsi ai messaggi presidenziali di fine anno. In effetti, anzicchè notare un'accellerazione dell'elocuzione si riscontra il contrario: i Presidenti Gronchi, Segni, Saragat e Leone parlavano in modo ben più rapido dei Presidenti Pertini, Cossiga, Scalfaro, Ciampi, Napolitano e Mattarella.^[La variazione rispetto alla media é statisticamente significativa e non può pertanto essere attribuita al caso (t-test).]  ^[Sarebbe utile --ma il dato purtroppo non è disponibile-- conoscere le velocità medie di elocuzione della popolazione italiana in generale, anno per anno, dal 1949 in avanti per paragonare ai dati dei messaggi presidenziali.]
+
+&nbsp;
+
+```{r evoluzioni_elocutorie_1, fig.height=4, fig.width=9}
+fast <- c('giovanni gronchi', 'antonio segni', 'giuseppe saragat', 
+          'giovanni leone')
+slow <- c('francesco cossiga', 'oscar luigi scalfaro', 'carlo azeglio ciampi',
+          'giorgio napolitano', 'sergio mattarella')
+mean.fast <- mean(interventi$wordMinute[interventi$Presidente %in% fast], na.rm=T)
+mean.slow <- mean(interventi$wordMinute[interventi$Presidente %in% slow], na.rm=T)
+ggplot(interventi, aes(x= Anno, y=wordMinute)) +
+    geom_point(aes(color=Presidente), size=2) +
+    geom_smooth() +
+    geom_vline(xintercept=1977.5, linetype="dashed", colour="darkgrey", size=0.4) +
+    geom_vline(xintercept=1986.5, linetype="dashed", colour="darkgrey", size=0.4) +
+    geom_segment(aes(x = 1954, y = mean.fast, xend = 1977.5, yend = mean.fast), size=0.15, color='red') +
+    geom_segment(aes(x = 1986.5, y = mean.slow, xend = 2015, yend = mean.slow), size=0.15, color='red') +
+    theme(legend.position='none') +
+    titles.format +
+    ggtitle('Messaggi di fine anno - Evoluzioni nell\'elocuzione\n(Linea rossa: media per il periodo') +
+    ylab('Numero di parole al minuto')
+```
+
+&nbsp;
+
+```{r evoluzioni_elocutorie_2, fig.height=5, fig.width=9}
+ttest <- t.test(interventi$wordMinute, na.rm= T)
+ggplot(interventi, aes(x= Presidente, y=wordMinute)) +
+    geom_boxplot(aes(color=Presidente)) +
+    geom_hline(yintercept=mean(interventi$wordMinute, na.rm=T), linetype="dashed", colour="black", size=0.4) +
+    geom_hline(yintercept=mean(ttest[[4]][1], na.rm=T), linetype="dashed", colour="darkgrey", size=0.4) +
+    geom_hline(yintercept=mean(ttest[[4]][2], na.rm=T), linetype="dashed", colour="darkgrey", size=0.4) +
+    theme(legend.position='none', axis.text.x=element_text(angle=45, hjust=1)) +
+    titles.format +
+    ggtitle('Velocità di Elocuzione nei Messaggi di Fine Anno') +
+    ylab('Numero di parole al minuto')
+```
+
+
+Forse val la pena anche notare un dettaglio: sebbene tutti i Presidenti fossero seduti per pronunciare il messaggio di fine anno, non tutti lo sono stati allo stesso modo. Per la maggior parte dei messaggi, i Presidenti erano seduti alla scrivania; i Presidenti Pertini, Scalfaro e Mattarella usarono talvolta una potrona in un salotto del Quirinale, senza scrivania^[Non è chiaro tuttavia se il Presidente Scalfaro fosse o meno al Quirinale per il messaggio del 31 dicembre 1997.]; il Presidente Pertini nel 1984 si sedette addirittura di fianco ad un focolare in un ambiente semplice lontano dal formalismo e le dorature quirinalizie. In particolare, nel 2011 e 2012, il Presidente Napolitano si sedette in modo informale alla scrivania, obliquamente (e con la giacca sbottonata nel 2011). In queste due occasioni (2011 e 2012), la media di parole pronunciate al minuto cresce dalle 110 alle 120^[*p-value* del t-test di circa 0.00016, quindi non attribuibile al caso.], ad indicare --ma si tratta solo di indicazione di massima il cui orientamente andrebbe seguito negli anni-- che mutamenti nella scenografia del messaggio di fine anno possono avere un impatto sulla locuzione.
+
+&nbsp;
+
+### 2. Lunghezza
+
+Benché il settennato del Presidente Scalfaro sia caraterizzato dai messaggi di fine anno di gran lunga più prolissi della storia repubblicana (con addirittura `r format(max(interventi$wordCount), big.mark=".", decimal.mark=",")` parole pronunciate il 31 dicembre 1997), è innegabile una tendenza all'allungamento del messaggio di auguri, da meno di 500 parole in media prima del 1960^[Per l'esattezza `r format(round(interventi %>% filter(Anno <= 1960) %>% summarise(mean(wordCount)),1), big.mark=".", decimal.mark=",", scientific=F)` parole.] a mediamente più di 1.500 parole dopo il 1980^[Con la notevole eccezione del 1991, anno in cui il Presidente Cossiga andò in TV a fare gli auguri per dire sostanzialmente che non avrebbe detto altro, il tutto in sole 419 parole in meno di 4 minuti. Va segnalato che, da un punto di vista statistico, sono proprio i messaggi dei Presidenti Pertini e Scalfaro ad imprimere la più forte crescita alla tendenza generale (regressione).]. Questa tendenza alla crescita, tuttavia, subisce una battuta d'arresto nel 1999-2000 e segna una leggera inversione negli ultimi 15 anni, con messaggi che contano, in gran parte, tra le 1.800 e le 2.250 parole circa.
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+```{r stat_descr_3, fig.height=4, fig.width=9}
+ggplot(interventi, aes(x=Anno, y=wordCount)) +
+    geom_smooth() +
+    geom_point(color='#666666', size=2) +
+    theme(legend.position='none') +
+    titles.format +
+    ggtitle('Messaggi di fine anno - Tendenza generale') +
+    ylab('Numero di parole')
+```
+
+
+### 3. Frequenze
+
+In questo tipo di pubblico discorso che la diffusione televisiva rende fruibile a tutti in una specie di celebrazione, formale e ricorrente, che già nel 1964 il Presidente Saragat definì una "comunione spirituale di tutta la nazione", la scelta e l'uso dei termini pronunciati dal Presidente non vengono di certo affidati al caso. D'altronde, sin dai primi anni, il messaggio presidenziale di fine anno è stato oggetto di lettura ed analisi nei minimi particolari da parte di giornalisti, analisti e personale politico, oltre ad essere seguito da una *audience* molto vasta. Interessante pertanto evidenziare le parole e, dietro a loro, le tematiche usate con maggior frequenza dai Presidenti per tentare di delineare la mappa dei temi di rilevanza storica oppure di personale interesse del locutore.
+
+Per l'insieme dei messaggi di fine anno pronunciati da tutti i Presidenti, non stupisce vedere che l'*Italia* rappresenta il tema centrale e dominante^[I termini "Italia", "italiani", "italiane" vengono pronunciati quasi 700 volte in 67 messaggi.], insieme al bilancio consuntivo dell'anno passato e ai suggerimenti, proposte, auspici per l'anno nuovo. La *pace* e i *giovani* occupano anche un posto di rilievo negli auguri presidenziali, ma pure *politica*, *Europa*, *libertà* e *lavoro* sono temi che molti Presidenti hanno affrontato il 31 dicembre.
+
+```{r Freqterm_all, fig.height=4,, fig.width=9}
+corpus <- data.frame(interventi$Messaggio)
+corpus <- DataframeSource(corpus)
+corpus <- Corpus(corpus, readerControl = list(language="it"))
+
+#remove the stopwords ---------------------------
+corpus <- tm_map(corpus, removeWords, stopwords("italian"))
+# remove the punctuation ------------------------
+corpus <- tm_map(corpus, removePunctuation)
+# remove the numbers ----------------------------
+corpus <- tm_map(corpus, removeNumbers)
+# remove extra white spaces ---------------------
+corpus <- tm_map(corpus, stripWhitespace)
+# Stemming (simpler lemmization) ----------------
+#corpus <- tm_map(corpus, stemDocument)
+
+# summary(corpus)
+corpusDTM <- TermDocumentMatrix(corpus)
+# corpusDTM
+FreqTerm <- as.data.frame(rowSums(as.matrix(corpusDTM)))
+FreqTerm$words <- row.names(FreqTerm)
+row.names(FreqTerm) <- NULL
+colnames(FreqTerm)[1] <- 'totalFreq'
+FreqTerm <- FreqTerm %>% arrange(desc(totalFreq))
+
+exclusion <- data.frame(words=c('anno', 'ognuno', 'vie', 'via', 'due', 'fra', 
+                   'così', 'può','esso', 'ancora','senza', 'essa', 'molto', 'quel',
+                   'mentre', 'pur', 'già', 'quest', 'quali', 'essere', 'ogni',
+                   'altro', 'ciò', 'proprio', 'alcuni', 'parte', 'altri', 'mila',
+                   'soltanto', 'ormai', 'qualche', 'qui', 'allora', 'essi', 'ancor',
+                    'gran', 'soprattutto','bene','quando', 'invece', 'altre',
+                   'tutte', 'tutta', 'detto', 'cosa'))
+FreqTerm <- anti_join(FreqTerm, exclusion)
+FreqTerm <- FreqTerm %>% arrange(desc(totalFreq))
+
+ggplot(data=FreqTerm[1:30,], aes(x=reorder(factor(words), -totalFreq), y=totalFreq)) + 
+    geom_bar(stat='identity', fill="grey45", width=0.5) + 
+    titles.format +
+    xlab('Parole') + 
+    ylab('Frequenza assoluta') + 
+    ggtitle('Frequenza di uso dei termini') +
+    theme(axis.text.x=element_text(angle=60, hjust=1))
+```
+
+
+&nbsp;
+
+Lo studio della frequenza assoluta di uso delle parole fornisce chiare indicazioni sull'impostazione *complessiva* degli auguri presidenziali. Questi appaiono come un momento di unità del paese, vera o auspicata, di raduno attorno a simboli patriottici condivisi e di celebrazione se non di costruzione della narrazione nazionale^[Con parole come, italia, italiani, giovani, popolo, paese, vita, libertà, cittadini, democrazia, fiducia, responsabilità.]. Ma non tutti i Presidenti insistono allo stesso modo sugli stessi temi. Aldilà delle convergenze, l'ecosistema lessicale proprio ad ogni Presidente varia notevolmente rispetto alla 'media' complessiva illustrando geografie tematiche specifiche e poliedriche. Le *nuvole di parole* (wordcloud) mettono bene in luce le preoccupazioni personali e le pieghe dell'attualità che trattengono in modo differenziato l'attenzione di questo o quel Presidente.
+
+&nbsp;
+
+
+Presidente L. Einaudi                  | Presidente G. Gronchi                  | Presidente A. Segni
+-------------------------------------- | -------------------------------------- | --------------------------------------
+![](/Presidenti_31Dic/_wcl2/LE.jpeg)   | ![](/Presidenti_31Dic/_wcl2/GG.jpeg)   | ![](/Presidenti_31Dic/_wcl2/AS.jpeg)
+
+
+Presidente G. Saragat                  | Presidente G. Leone                    | Presidente S. Pertini
+-------------------------------------- | -------------------------------------- | --------------------------------------
+![](/Presidenti_31Dic/_wcl2/GS.jpeg)  | ![](/Presidenti_31Dic/_wcl2/GL.jpeg)   | ![](/Presidenti_31Dic/_wcl2/SP.jpeg)
+
+
+Presidente F. Cossiga                  | Presidente O. L. Scalfaro              | Presidente C. A. Ciampi
+-------------------------------------- | -------------------------------------- | --------------------------------------
+![](/Presidenti_31Dic/_wcl2/FC.jpeg)    | ![](/Presidenti_31Dic/_wcl2/OLS.jpeg)   | ![](/Presidenti_31Dic/_wcl2/CAC.jpeg)
+
+
+Presidente G. Napolitano               | Presidente S. Mattarella               |  
+-------------------------------------- | -------------------------------------- | --------------------------------------
+![](/Presidenti_31Dic/_wcl2/GN.jpeg)    | ![](/Presidenti_31Dic/_wcl2/SM.jpeg)    |  
+
+
+### 4. Associazioni di parole
+
+Fondamentale nell'analisi dei contenuti in linguaggio naturale^[_Natural Language Processing_ (NPL)] è l'individuazione di strutture di associazione, ovvero parole che vengono spesso usate insieme, in coppia (*bigrammi*) o in strutture più lunghe (3, 4 o più parole).
+
+```{r token_graph, fig.height=5,, fig.width=9}
+tokenBigram <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
+bigrams <- TermDocumentMatrix(corpus, control = list(tokenize = tokenBigram)) 
+
+freqBigrams <- as.data.frame(rowSums(as.matrix(bigrams)))
+freqBigrams$words <- row.names(freqBigrams)
+row.names(freqBigrams) <- NULL
+colnames(freqBigrams)[1] <- 'totalFreq'
+freqBigrams <- freqBigrams %>% arrange(desc(totalFreq))
+ggplot(data=freqBigrams[1:50,], aes(x=reorder(factor(words), -totalFreq), y=totalFreq)) + 
+    geom_bar(stat='identity', fill="grey45", width=0.7) + 
+    titles.format +
+    xlab('BiGrammi') + 
+    ylab('Frequenza aasoluta') + 
+    ggtitle('BiGrammi piu\' frequenti') +
+    theme(axis.text.x=element_text(angle=60, hjust=1))
+```
+
+
+Oltre alle espressioni ovvie e di circostanza in questo esercizio di fine anno (quali sono, per esempio, 'buon anno', 'nuovo anno', 'quest anno') e ai riferimenti alla nazione ('popolo italiano', 'unita nazionale', 'bene comune', 'carta costituzionale'), può destare qualche sorpresa vedere figurare espressioni per lo meno inattese tra le più citate. Difficile, per esempio, rendersi conto senza un'analisi quantitativa del linguaggio quanto questi messaggi siano autoreferenziali con una forte ricorrenza di espressioni quali 'presidente repubblica'^[Che nell'analisi statistica sta per 'presidente della repubblica'.], 'capo stato', 'vorrei dire', oppure quanto 'forze armate' e 'forze ordine' siano presenti nei messaggi di auguri. Inoltre, sia l'analisi dei bi-grammi che dei tri-grammi toglie ogni dubbio, se ce ne fosse ancora bisogno, sui temi di massima centralità per l'Italia in questi quasi settantanni di storia contemporanea. 'Unione europea', 'nazioni unite', 'comunita internazionale' e 'medio oriente' ricordano l'inserimento del Paese nella rete dei rapporti internazionali ma anche dei problemi geo-politici su larga scala. Allo stesso modo, espressioni del tipo 'giustizia sociale', 'economico sociale', 'debito pubblico' o 'criminalita organizzata' ci riportano a problemi interni che hanno segnato la storia recente del paese. Infine, ci si può ragionevolmente chiedere se la presenza di 'giovanni paolo' e 'paolo ii' tra i bi-grammi più usati non suggerisca la prossimità --forse ancor più spirituale che geografica-- tra il Quirinale e il Vaticano. D'altronde, nell'arco dei `r nrow(interventi)` anni, il tri-gramma 'aiuto di dio' compare più volte di 'posti di lavoro'...
+
+A titolo puramente esemplificativo, viene riportata una lista *parziale e selettiva* di tri-grammi^[Ottenuti con il software AntCon 3.4.3] citati almeno 10 volte.
+
+Frequenza di uso | TriGramma
+---------------- | ----------------
+45 | forze dell ordine
+44 | capo dello stato
+43 | il popolo italiano
+36 | del nostro paese
+36 | per la pace
+25 | presidente della repubblica
+24 | tutti gli italiani
+24 | tutti i cittadini
+21 | senso di responsabilità
+19 | la libertà e
+16 | il capo dello
+14 | il mio pensiero
+14 | le forze politiche
+13 | contro il terrorismo
+13 | economico e sociale
+13 | giovanni paolo ii
+13 | presidente del consiglio
+12 | della nostra società
+12 | il bene comune
+11 | aiuto di dio
+11 | pace nel mondo
+11 | per la giustizia
+10 | dell unione europea
+10 | della persona umana
+10 | delle nazioni unite
+10 | posti di lavoro
+
+&nbsp;
+
+### 5. Tematiche
+
+Come abbiamo già visto, il periodo storico, gli avvenimenti maggiori, nazionali o internazionali, le problematiche di rilievo, le emergenze affrontate dalle Istituzioni o dalla popolazione, i particolari centri di interesse di ogni Presidente hanno un notevole impatto sulla scelta della terminologia adottata nei messaggi di auguri di fine anno. Per illustrare questo fenomeno di selezione ci limiteremo a pochi esempi relativi a sette temi specifici.^[I temi sono stati scelti senza prestesa di rappresentatività.]
+
+
+* disoccupazione
+* lavoro e lavoratori
+* giovani
+* cultura
+* terrorismo e terrore
+* riforme
+* patria^[Sono stati usati i seguenti termini o espressioni *regex* nella ricerca delle occorrenze: 'disoccupa|sottocupa', 'lavor', 'cultur', 'terror', 'riform', '\\bpatri(a|ota|oti|otti)', '\\bgiov(ani|ane|entù|anile|anili|inezza|anezza)\\b']
+
+
+Presentati in forma grafica (nei grafici intitolati *Numero di Evocazioni del Tema in Ogni Messaggio*) si percepisce meglio, e comunque in modo più immediato, quando, e quanto, un tema specifico sia stato evocato nella lunga catena dei `r nrow(interventi)` messaggi di fine anno. Ogni grafico fotografa un tema e indica il numero di volte che quel tema è stato citato, in assoluto, in ogni particolare messaggio. Per esempio, nel primo grafico relativo alla disoccupazione, si vede che il termine è stato usato ben sei volte nel messaggio di fine anno del 1984 (Presidente Sandro Pertini). 
+
+Questo, tuttavia, rappresenta solo la metà dell'analisi. La pregnanza di un tema non si misura solo dalla frequenza assoluta dei termini rilevanti nei singoli messaggi bensì anche dalla frequenza relativa del termine nel messaggio paragonata alla media di uso dello stesso termine nella lingua italiana in generale nel medesimo periodo storico o anno.^[Questa seconda analisi è resa possibile da [Google Books](http://storage.googleapis.com/books/ngrams/books/datasetsv2.html) che mette a disposizione dei ricercatori le frequenze di tutte le parole usate in milioni di libri, anno per anno, lingua per lingua, dal 1500 circa al 2009. Va sottolineato che la quantificazione terminologica del *corpus linguistico semantico* costruito da Google Books *non* include i testi pubblicati nei media (giornali, Internet) che forse modificherebbero i dati di frequenza aggiungendo una componente di attualità più marcata.]
+
+
+&nbsp;
+
+
+```{r tematiche}
+interventi$Abs_disoccupazione <- str_count(interventi$Messaggio, "disoccupa|sottoccupa")
+interventi$Rel_disoccupazione <- (interventi$Abs_disoccupazione/interventi$wordCount)*100
+
+interventi$Abs_lavoro <- str_count(interventi$Messaggio, "lavor")
+interventi$Rel_lavoro <- (interventi$Abs_lavoro/interventi$wordCount)*100
+
+interventi$Abs_cultura <- str_count(interventi$Messaggio, "cultur")
+interventi$Rel_cultura <- (interventi$Abs_cultura/interventi$wordCount)*100
+
+interventi$Abs_terrorismo <- str_count(interventi$Messaggio, "terror")
+interventi$Rel_terrorismo <- (interventi$Abs_terrorismo/interventi$wordCount)*100
+
+interventi$Abs_riforme <- str_count(interventi$Messaggio, "riform")
+interventi$Rel_riforme <- (interventi$Abs_riforme/interventi$wordCount)*100
+
+interventi$Abs_patria <- str_count(interventi$Messaggio, "\\bpatri(a|ota|oti|otti)")
+interventi$Rel_patria <- (interventi$Abs_patria/interventi$wordCount)*100
+
+interventi$Abs_giovani <- str_count(interventi$Messaggio, '\\bgiov(ani|ane|entù|anile|anili|inezza|anezza)\\b')
+interventi$Rel_giovani <- (interventi$Abs_giovani/interventi$wordCount)*100
+
+FreqLang <- read.table('/Presidenti_31Dic/Data/_FrequenceLanguage.txt', header = T, sep=',',
+           stringsAsFactors = F)
+
+FreqAll <- right_join(interventi, FreqLang)
+```
+```{r t_test}
+Freq.ttest <- FreqAll[,grep("^[Rel]", names(FreqAll), value=TRUE)]
+Freq.ttest <- Freq.ttest[,c(1,2,7,3,4,5,6,9,11,10,8,14,13,12)]
+t.temi <- gsub('Rel_', '', colnames(Freq.ttest))
+buffer <- list()
+ttest <- data.frame(stringsAsFactors = F)
+
+for(i in 1:(ncol(Freq.ttest)/2)){
+    buffer <- t.test(Freq.ttest[,i], Freq.ttest[,(i*2)])
+    buffer <- data.frame(unlist(buffer), stringsAsFactors = F)
+    names <- rownames(buffer)
+    buffer <- data.frame(t(data.frame(unlist(buffer))),stringsAsFactors = F)
+    buffer[,1:8] <- as.numeric(buffer[,1:8])
+    buffer[1,12] <- t.temi[i]
+    colnames(buffer) <- c(names, 'tema')
+    ttest <- rbind(ttest, buffer)
+}
+```
+
+
+
+##### 5.1. Disoccupazione
+
+```{r disoccupazione, fig.height=5, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_disoccupazione, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    legend.bottom
+```
+
+```{r disoccupazione_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_disoccupazione), color='red') + 
+    geom_segment(aes(y=Rel_disoccupazione, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_disoccupazione), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 11)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'disoccupazione']
+```
+
+
+&nbsp;
+
+##### 5.2. Lavoro e lavoratori
+
+```{r lavoro, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_lavoro, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r lavoro_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_lavoro), color='red') + 
+    geom_segment(aes(y=Rel_lavoro, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_lavoro), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'lavoro']
+```
+
+
+&nbsp;
+
+##### 5.3. Giovani
+
+```{r giovani, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_giovani, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r giovani_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_giovani), color='red') + 
+    geom_segment(aes(y=Rel_giovani, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_giovani), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'giovani']
+```
+
+
+&nbsp;
+
+##### 5.4. Cultura
+
+```{r cultura, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_cultura, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r cultura_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_cultura), color='red') + 
+    geom_segment(aes(y=Rel_cultura, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_cultura), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'cultura']
+```
+
+
+&nbsp;
+
+##### 5.5. Terrorismo e terrore
+
+```{r terrorismo, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_terrorismo, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r terrorismo_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_terrorismo), color='red') + 
+    geom_segment(aes(y=Rel_terrorismo, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_terrorismo), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'terrorismo']
+```
+
+
+&nbsp;
+
+##### 5.6. Riforme
+
+```{r riforme, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_riforme, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r riforme_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_riforme), color='red') + 
+    geom_segment(aes(y=Rel_riforme, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_riforme), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'riforme']
+```
+
+
+
+&nbsp;
+
+##### 5.7. Patria
+
+```{r patria, fig.height=4, fig.width=9}
+ggplot(data=interventi, aes(x=Anno, y=Abs_patria, fill=Presidente)) + 
+    geom_bar(stat='identity', width=0.2) + 
+    geom_point(aes(color=Presidente)) +
+    titles.format +
+    ggtitle('Numero di Evocazioni del Tema in Ogni Messaggio') +
+    ylab('Frequenza assoluta') +
+    theme(legend.position='none')
+```
+
+```{r patria_2, fig.height=4, fig.width=8.3}
+ggplot(data=FreqAll, aes(x=Anno)) + 
+    geom_point(aes(y=Rel_patria), color='red') + 
+    geom_segment(aes(y=Rel_patria, yend=0, xend=Anno, color='red')) + 
+    geom_line(aes(y=RelLang_patria), color='black')  + 
+    scale_y_log10(limits = c(0.00005, 10)) +
+    titles.format +
+    ggtitle('Frequenze relative comparate (1949-2009)\nRosso: messaggi presidenziali ; Nero: lingua italiana') +
+    ylab('Frequenza relativa (%) - Scala log10') +
+    theme(legend.position='none', axis.text.y=element_text(angle=90, hjust=0.5))
+a <- ttest$p.value[ttest$tema == 'patria']
+```
+
+
+E' utile sottolineare che in ognuno di questi sette casi, la differenza di frequenza relativa d'uso del tema (lemma) tra la lingua italiana in generale (in quegli anni) e i messaggi di fine anno dei Presidenti non è dovuta al caso. Il *t-test* di indipendenza^[Metodo Welch.] ha ottenuto un valore *p* sempre inferiore a 0,001.
+
+
+Da questo tipo di analisi si può verificare, per esempio, che il tema del *terrorismo* occupa un posto di notevole rilevanza per il Presidente Pertini --sicuramente perché il suo settennato fu, da questo punto di vista, un periodo difficile e tragico per l'Italia--, così come furono per lui anche centrali le questioni della *disoccupazione* e dei *giovani*. Ma si nota anche che, complessivamente, per i nostri Presidenti, il *terrorismo* è iscritto nella nostra memoria storica come un fenomeno legato tanto --se non di più-- alla fine degli anni 70 e inizi 80 quanto agli episodi di questi ultimi 10-15 anni, dal 2001 in avanti. Il Presidente Napolitano, invece, sembra essere stato preoccupato non solo dal tema del *lavoro* ma anche e soprattutto dalla problematica delle *riforme* allorché fa riferimento alla *patria* solo 4 volte in 9 anni; tema che, invece, fu molto caro ai Presidenti Ciampi e Scalfaro. La *cultura*, dal canto suo, ha attratto prevalentemente l'attenzione dei Presidenti Cossiga e Scalfaro. Andrebbe però ulteriormente approndondita l'analisi statistica per capire se intendessero cultura nel senso *antropologico* oppure *artistico*.
+
+Una volta stabilito l'algoritmo, questo tipo di analisi ha il vantaggio di poter essere allargato a qualsiasi tema, offrendo una lettura storica radicata nella realtà di dati quantificati e non solo nell'ispirazione del ricercatore. Sarebbe sicuramente istruttivo a più di un titolo il confronto tra l'analisi socio-politica "tradizionale" e la rilettura statistica dei dati su temi come, per esempio, il *meridione*, le *mafie*, i *flussi migratori*, l'*innovazione*, per citarne solo alcuni.
+
+
+```{r lemmetization}
+set.kRp.env(TT.cmd = "/_TreeTagger/cmd/tree-tagger-italian", lang = "it")
+
+## Create connection
+file.connection <- file(description=file.name, open="r")
+
+read.command <- paste("wc -l ", file.name, " | awk '{ print $1 }'", sep="")
+n <- as.numeric(system(command=read.command, intern=TRUE))
+lemCorrection <- read.csv('/Presidenti_31Dic/Data/_LemmeCorrection.txt', 
+                          header = TRUE, stringsAsFactors = FALSE)
+interventi$lemme <- NA
+for(i in 1:n) {
+    buffer <- scan(file=file.connection, what = character(), nlines=1, quiet=TRUE)
+    if(i != 1){
+        buffer <- paste(buffer, collapse=' ')
+        buffer <- gsub('^(.*)\\|','', buffer)
+        write.table(buffer, file='/Presidenti_31Dic/Data/_buffer.txt', quote=FALSE, 
+                  fileEncoding = 'UTF-8', col.names=F, row.names=F)
+        tagged.obj <- treetag('/Presidenti_31Dic/Data/_buffer.txt')
+        tagged <- taggedText(tagged.obj)
+        tagged <- left_join(tagged, lemCorrection)
+        
+        tagged$lemma[tagged$lemma == '<unknown>'] <- tagged$to[tagged$lemma == '<unknown>']
+        tagged$lemma[tagged$lemma == '@card@'] <- tagged$token[tagged$lemma == '@card@']
+        lemmetized <- paste(tagged$lemma, collapse=" ")
+        interventi$lemme[i-1] <- lemmetized
+    }
+}
+close(file.connection)
+interventi$lemme <- gsub(' \\.', '\\.', interventi$lemme)
+```
+```{r sentiment}
+sentiment.words <- read.table('/Presidenti_31Dic/Sentiment/lexicon/words_v3.txt', 
+                              header = T, sep=',',
+                              stringsAsFactors = F) 
+sentiment.words$sentiment <- toupper(sentiment.words$sentiment)
+neg.words <- sentiment.words %>% filter(sentiment == 'NEG')
+neg.words <- as.vector(neg.words$word)
+pos.words <- sentiment.words %>% filter(sentiment == 'POS')
+pos.words <- as.vector(pos.words$word)
+
+sentiments <- data.frame(
+    index=integer(),
+    indexMessaggio=integer(),
+    anno=integer(),
+    presidente=character(),
+    indexFrase=integer(),
+    frase=character(),
+    wordCount=integer(),
+    sum.pos=integer(),
+    sum.neg=integer(),
+    overall.sentiment=integer(),
+    prct.pos=numeric(),
+    prct.neg=numeric(),
+    stringsAsFactors = F
+)
+
+for(i in 1:nrow(interventi)) {
+    temp <- unlist(strsplit(interventi$lemme[i], "\\.|\\. "))
+    for(j in 1:length(temp)){
+        index <- nrow(sentiments) + 1
+        sentiments[index,] <- NA
+        sentiments$index[index] <- index
+        sentiments$indexMessaggio[index] <- interventi$index[i]
+        sentiments$anno[index] <- interventi$Anno[i]
+        sentiments$presidente[index] <- as.character(interventi$Presidente[i])
+        sentiments$indexFrase[index] <- j
+        sentiments$frase[index] <- temp[j]
+        sentiments$wordCount[index] <- sapply(gregexpr("\\W+", sentiments$frase[index]), length) +1
+        buffer <- sentiments$frase[index]
+        buffer <- gsub('[[:punct:]]', ' ', buffer)
+        buffer <- gsub('[[:cntrl:]]', '', buffer)
+        buffer <- gsub('\\d+', '', buffer)
+        buffer <- gsub('^\\s+|\\s+$', '', buffer)
+        buffer <- unlist(str_split(buffer, "\\s+"))
+        sentiments$sum.pos[index] <- sum(!is.na(match(buffer, pos.words)))
+        sentiments$sum.neg[index] <- -sum(!is.na(match(buffer, neg.words)))
+        sentiments$overall.sentiment[index] <- sentiments$sum.pos[index] + sentiments$sum.neg[index]
+        sentiments$prct.pos[index] <- (sentiments$sum.pos[index] / sentiments$wordCount[index]) * 100
+        sentiments$prct.neg[index] <- (sentiments$sum.neg[index] / sentiments$wordCount[index]) * 100
+        sentiments$prct.overall[index] <- (sentiments$overall.sentiment[index] / sentiments$wordCount[index]) * 100
+    }
+}
+sentiments$presidente <- as.factor(sentiments$presidente)
+sentiments$presidente <- factor(sentiments$presidente,
+                                levels(sentiments$presidente[c(8,5,1,7,6,10,3,9,2,4,11)]))
+```
+
+
+&nbsp;
+
+
+### 6. Analisi dei sentimenti
+
+L'analisi statistica dei sentimenti^[Solitamente chiamata *sentiment analysis* oppure *opinion mining*. Vedi Mejova, 2009 per una descrizione complessiva.] si sviluppa sulla base di un insieme di metodologie finalizzate alla misurazione, quantificazione e classificazione di opinioni e sentimenti espressi in documenti (e corpus testuali) tramite l'uso di parole e termini semanticamente e semiologicamente marcati. Per esempio, in funzione della composizione lessicale del testo, la frase "Lo scorso trimestre l'economia europea ha tratto profitto del prezzo favorevole del petrolio" verrebbe classificata come *positiva*, allorché risulterebbe *negativa* la frase "Nello stesso periodo il mercato del lavoro ha continuato a soffrire, penalizzando in particolare i giovani." In questi ultimissimi anni, lo sviluppo della disciplina ha conosciuto una forte accellerazione consecutiva al desiderio di capire meglio l'evoluzione di vari tipi di contenuti pubblicati da centinaia di milioni di utenti sui *social media* (nonostante le difficoltà dovute al rilevamento automatico di sentimenti in testi brevi. Thelwall, 2010) e gli innumerevoli siti web che offrono all'utente la possibilità di recensire prodotti e servizi (Galitsky, 2009; Cataldi and al., 2013). 
+
+Solitamente usata a scopo scientifico^[Per esempio per aggiungere spessore quantitativo all'analisi letteraria, oppure in ambito politico per meglio capire le evoluzioni degli orientamenti dell'elettorato.] ma anche economico-commerciale^[Per valutare il livello di adesione a messaggi pubblicitari o a specifiche marche.], la *sentiment analysis* applicata a documenti storici, aministrativi o istituzionali rimane ancora embrionale, soprattutto per documenti in lingua italiana.^[La facile reperibilità di molteplici dizionari inglesi di parole associate a valenze di vari sentimenti e opinioni ha dinamizzato le ricerche su contenuti in lingua inglese (Baccianella et al., 2010; Gonzales-Ibanes and al., 2011; Liu, 2012). Lo stesso stà succedendo per lo spagnolo e, in minor misura, per altre lingue. In Italiano, purtroppo, la disponibilità di tali strumenti soffre ancora notevoli carenze e gli sforzi lodevoli di ricercatori isolati non bastano a colmare il doppio deficit di, da un lato, liste di parole con la corrispondente quantificazione della connotazione positiva o negativa e, dall'altro, di classificazioni delle stesse parole per tipologia di sentimento o opinione. Disporre di un dizionario di base che segnali la valenza positiva (+1) o negativa (-1) di un aggettivo è un primo passo fondamentale per questo approccio. Ma sapere anche se lo stesso aggettivo appartiene a una specifica categoria di sentimento --per esempio *rabbia*, *gioia*, *tristezza*, *paura*, *sorpresa*, *fiducia*, ecc.-- consente di arricchire l'analisi. In Italiano, vedi per esempio il software *sentiment-italian-lang* di Giuseppe Ragusa - https://github.com/gragusa?tab=repositories, Casotto, P. (2012), Basile and Nissim (2013).] Di conseguenza, chiedersi se la "verità" dei messaggi di fine anno dei Presidenti della Repubblica non risieda tanto nei dati sottostanti quanto nell'analisi politica tradizionale può solo stimolare un filone innovativo di ricerca e innescare riflessioni radicate nell'estensione delle *data sciences* allo studio delle Istituzioni.
+
+Il primo passo per svolgere la *sentiment analysis* dei messaggi presidenziali è consistito nella riduzione di complessità lessicale per mezzo della *lemmizzazione* del testo, ovvero la sostituzione di ogni termine usato con il suo lemma di riferimento. Per esempio, l'ultima frase del primo messaggio di fine anno del Presidente Einaudi nel 1949, da "tale sono sicuro è il comune voto e tale è il mio personale augurio che si rivolge fervido e affettuoso in quest ora ad ogni italiano entro e fuori dei confini della patria" diventa "tale essere sicuro essere il comune voto e tale essere il mio personale augurio che si rivolgere fervido e affettuoso in questo ora ad ogni italiano entro e fuori del confine del patria". Questo consente una più facile gestione dei dizionari di parole che, tra varie semplificazioni, non necessitano di includere tutte le forme coniugate di ogni verbo bensì possono limitarsi a citare la sola forma infinitiva. Per una *sentiment analysis* di base e senza sofisticazioni, una volta *lemmizzati* i messaggi, a ogni termine (lemma) viene associato un valore positivo unico (+1) se il termine esprime un sentimento, opinione, atteggiamento, concetto positivo, un valore negativo unico (-1) se il lemma traduce un sentimento, opinione, atteggiamento, concetto negativo e un valore neutro (0) per i termini neutri (Vryniotis, 2013).^[Per una maggiore sofisticazione, i lemmi possono essere quantificati su una scala reale che include i valori intermedi tra 0 e 1, 0 e -1.] Dopo aver sommato i valori delle singole parole raggruppate per frase, ogni frase di ogni messaggio presidenziale può essere caratterizzata da 3 valori assoluti: la somma dei "sentimenti positivi" (espressa in un numero intero sempre positivo), la somma dei "sentimenti negativi" (espressa in un numero intero sempre negativo), la somma complessiva dei "sentimenti" espressi in quella frase (tradotta in un numero intero positivo o negativo a seconda dei sentimenti dominanti). 
+
+La distribuzione dei valori di somma complessiva di sentimento dimostra che i messaggi di fine anno veicolano concetti, opinioni, sentimenti, apprezzamenti prevalentemente positivi. Dal 1949 a oggi, ogni frase dei messaggi si colloca infatti sulla sezione positiva della scala, con un valore medio di `r format(round(mean(sentiments$overall.sentiment),1), big.mark=".", decimal.mark=",", scientific=F)` e un valore mediano di `r format(round(median(sentiments$overall.sentiment),1), big.mark=".", decimal.mark=",", scientific=F)`.
+
+
+```{r distribuzione_sentimenti, fig.height=4.5, fig.width=9}
+ggplot(data=sentiments, aes(x=overall.sentiment)) +
+    geom_histogram(aes(y=..density..), binwidth=2, colour="black", fill="white") +
+    geom_density(alpha=.2, fill="#FF6666") +
+    geom_vline(aes(xintercept=mean(overall.sentiment)), colour="blue", linetype="dashed") +
+    geom_vline(aes(xintercept=median(overall.sentiment)), colour="darkgreen", linetype="dashed") +
+    scale_x_continuous(breaks=seq(-15, 40, 5)) +
+    titles.format +
+    ggtitle('Distribuzione dei Sentimenti') +
+    xlab('Valore complessivo del sentimento (per frase)\n(Blu: media ; Verde: mediana)') +
+    ylab('Densità')
+```
+
+
+Tuttavia, per una maggiore accuratezza, questi valori interi (somma positiva, somma negativa e somma complessiva) vanno ponderati rapportandoli al numero totale di parole nella frase. Si ottengono così 3 valori percentuali (sentimenti positivi, negativi e percentuale complessiva). Aggregando i valori delle singoli frasi per messaggio e, successivamente, raggruppando i messaggi per presidente, si perde in granularità ma si acquisisce una visione d'insieme più immediata ed esplicita (in modo particolare se si usa una funzione polinomiale per "levigare" le asperità del valore complessivo).
+
+Per esempio, il messaggio di fine anno del Presidente Mattarella appare prevalentemente positivo nonostante siano presenti dichiarazioni spiccatamente negative.^[In questo tipo di grafico, l'ordine di successione delle frasi nel discorso fa da asse temporale (ascissa) --questo approccio viene solitamente definito come *novelistic time* (Mani, 2010).]
+
+
+&nbsp;
+
+
+```{r sentiment_mattarella, fig.height=4, fig.width=9}
+ggplot(data=sentiments[sentiments$anno == 2015,], aes(x=indexFrase)) +
+    geom_segment(aes(y=prct.neg, yend=0, xend=indexFrase), color='firebrick3')  + 
+    geom_segment(aes(y=prct.pos, yend=0, xend=indexFrase), color='springgreen4') +
+#    geom_line(aes(y=prct.overall), color = 'royalblue1', size=1) +
+    stat_smooth(aes(y=prct.overall), color = 'royalblue1', size=1,
+                se = F, method = "lm", formula = y ~ poly(x, 25)) +
+    titles.format +
+    ylab('Percentuale lemmi') +
+    xlab('Frase del messaggio') +
+    ggtitle('Sentimenti nel Messaggio di Fine Anno del Pr. Mattarella\n(Verde: positivo ; Rosso: negativo ; Blu: complessivo)')
+
+buffer <- sentiments %>% 
+    group_by(anno) %>%
+    summarise(prct.pos = mean(prct.pos),
+              prct.neg = mean(prct.neg))
+```
+
+&nbsp;
+
+
+La *sentiment analysis* --che forse andrebbe chiamata *opinion mining* in questo caso-- aiuta anche ad esplicitare eventuali strutture di costruzione della narrazione, e magari capire come è stata trattata l'argomentazione da parte del locutore.
+
+I due grafici successivi illustrano i messaggi di fine anno pronunciati dal Presidente Napolitano nel 2007 e 2011. Si osserva una somiglianza della struttura narrativa: dopo gli auguri iniziali (che si traducono con un indice di sentimento alto), il Presidente evoca fatti, pensieri, opinioni, situazioni negativi (ciò fa notevolmente diminuire l'indice complessivo) per poi segnare un gran colpo esprimendo di nuovo sentimenti, opinioni chiaramente positivi che lentamente si "affievoliscono" fino agli auguri finali. In altre parole: dopo una partenza in quarta, arrivano subito le brutte notizie che sono immediatamente controbilanciate, prima da poche ma forti opinioni molto positive, poi da una lunga serie di espressioni ancora positive, fino alla conclusione del messaggio che alimenta una spiccata speranzo per l'anno a venire.
+
+
+```{r sentiment_napolitano2007, fig.height=4, fig.width=9}
+ggplot(data=sentiments[sentiments$anno == 2007,], aes(x=indexFrase)) +
+    geom_segment(aes(y=prct.neg, yend=0, xend=indexFrase), color='firebrick3')  + 
+    geom_segment(aes(y=prct.pos, yend=0, xend=indexFrase), color='springgreen4') +
+#    geom_line(aes(y=prct.overall), color = 'royalblue1', size=1) +
+    stat_smooth(aes(y=prct.overall), color = 'royalblue1', size=1,
+                se = F, method = "lm", formula = y ~ poly(x, 20)) +
+    geom_vline(xintercept=7.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=16.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=22.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=40.5, linetype="dashed", colour="blue", size=0.2) +
+    titles.format +
+    ylab('Percentuale lemmi') +
+    xlab('Frase del messaggio') +
+    ggtitle('Sentimenti nel Messaggio di Fine Anno del Pr. Napolitano (2007)\n(Verde: positivo ; Rosso: negativo ; Blu: complessivo)')
+```
+
+
+```{r sentiment_napolitano2011, fig.height=4, fig.width=9}
+ggplot(data=sentiments[sentiments$anno == 2011,], aes(x=indexFrase)) +
+    geom_segment(aes(y=prct.neg, yend=0, xend=indexFrase), color='firebrick3')  + 
+    geom_segment(aes(y=prct.pos, yend=0, xend=indexFrase), color='springgreen4') +
+#    geom_line(aes(y=prct.overall), color = 'royalblue1', size=1) +
+    stat_smooth(aes(y=prct.overall), color = 'royalblue1', size=1,
+                se = F, method = "lm", formula = y ~ poly(x, 20)) +
+    geom_vline(xintercept=6.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=24.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=32.5, linetype="dashed", colour="blue", size=0.2) +
+    geom_vline(xintercept=67.5, linetype="dashed", colour="blue", size=0.2) +
+    titles.format +
+    ylab('Percentuale lemmi') +
+    xlab('Frase del messaggio') +
+    ggtitle('Sentimenti nel Messaggio di Fine Anno del Pr. Napolitano (2011)\n(Verde: positivo ; Rosso: negativo ; Blu: complessivo)')
+```
+
+&nbsp;
+
+&nbsp;
+
+Anche l'analisi di lungo termine sui dati aggregati per messaggio riesce a trarre beneficio da questo approccio. Complessivamente, il livello di sentimento positivo espresso nei messaggi di fine anno da tutti i Presidenti varia assai poco. Nonostante si riscontrino oscillazioni più marcate di anno in anno (con un campo di variazione massima negli anni compreso tra il +`r round(max(buffer$prct.pos),1)`% del `r buffer$anno[which.max(buffer$prct.pos)]` e il +`r round(min(buffer$prct.pos),1)`% del `r buffer$anno[which.min(buffer$prct.pos)]`), la tendenza globale rimane stabile --relativa stabilità nel tempo sicuramente dovuta, almeno in parte, alle specificità di questo particolare esercizio di comuncazione che tende ad evidenziare la dimensione degli auguri e auspici positivi che vengono d'altronde ripetuti più volte nell'arco del messaggio.
+
+Cresce, invece, in tendenza, la proporzione di sentimento negativo nel corso degli anni, ma con oscillazioni che sembrano^[La cosa andrebbe verificata nel dettaglio.] seguire le evoluzioni delle crisi economiche e sociali. Si osserva, in effetti, un rapido degrado dei sentimenti espressi tra il 1959 e il 1980-1981  (circa un raddoppiamento dei lemmi negativi), seguito da una levimento del pessimismo dal 1981 al 2000 e di nuovo un progressivo oscuramento dei cieli dal 2001-2002 in avanti.
+
+
+```{r pos_sentiments_over_time, fig.height=4, fig.width=9}
+ggplot(data=buffer, aes(x=anno)) +
+    ylim(0,30) +
+    geom_point(aes(y=prct.pos), color='springgreen4') + 
+    geom_smooth(aes(y=prct.pos), color='springgreen4') +
+    titles.format +
+    ylab('Percentuale lemmi positivi') +
+    xlab('Anno') +
+    ggtitle('Evoluzione Complessiva del Sentimento Positivo')
+```
+
+
+```{r neg_sentiments_over_time, fig.height=4, fig.width=9}
+ggplot(data=buffer, aes(x=anno)) +
+    ylim(-12.5, 0) +
+    geom_point(aes(y=prct.neg), color='firebrick3') + 
+    geom_smooth(aes(y=prct.neg), color='firebrick3') +
+    titles.format +
+    ylab('Percentuale lemmi negativi') +
+    xlab('Anno') +
+    ggtitle('Evoluzione Complessiva del Sentimento Negativo')
+```
+
+
+&nbsp;
+
+L'espressione dei sentimenti considerata per ogni singolo presidente testimonia di una certa variabilità, con il Presidente Sandro Pertini che, fino ad oggi, si colloca agli estremi sia per la più alta percentuale dei sentimenti (lemmi) marcati negativamente che per la più bassa percentuale di quelli marcati positivamente. Aldilà delle differenze di personalità, il periodo storico avrà sicuramente influito sul volume del flusso di sentimenti negativi espressi dai Presidenti Leone e Pertini. Per questo stesso motivo, sarà utile guardare da vicino ai prossimi messaggi di fine anno per capire se il ricorrere a sentimenti negativi da parte del Presidente Mattarella conferma una tendenza che sembra innaugurarsi con il Presidente Napolitano oppure se si tratta solo di un caso dovuto al fatto che finora il Presidente Mattarella ha avuto un'unica occasione di fare gli auguri di fine anno alla nazione.
+
+
+```{r sentiments_by_president_1, fig.height=4.5, fig.width=9}
+buffer.pres <- sentiments %>% 
+    group_by(presidente) %>% 
+    summarise(prct.pos = mean(prct.pos), 
+              prct.neg = mean(prct.neg))
+buffer.pres$presidente <- factor(buffer.pres$presidente,
+                                 levels(buffer.pres$presidente)[c(8,5,1,7,6,10,3,9,2,4,11)])
+buffer.pres <- buffer.pres %>% arrange(presidente)
+
+ggplot(data=buffer.pres, aes(x=presidente)) +
+    ylim(-10,30) +
+    geom_segment(aes(y=prct.neg, yend=0, xend=presidente), color='firebrick3', size=10) +
+    geom_segment(aes(y=prct.pos, yend=0, xend=presidente), color='springgreen4', size=10) +
+    titles.format +
+    ggtitle('Espressione dei Sentimenti\n(Verde: positivo ; Rosso: negativo)') +
+    ylab('Pecentuale lemmi') +
+    xlab('Presidente') +
+    theme(axis.text.x=element_text(angle=25, hjust=1))
+```
+
+
+&nbsp;
+
+
+<div style="text-align: center;" markdown="1">\*     \*     \*</div>
+
+
+&nbsp;
+
+
+#### Bibliografia
+
+Baayen, R.H., (2008). *Analyzing Linguistic Data*, Cambridge University Press.
+
+Baccianella, S., Esuli, A. and Sebastiani, F. (2010). "Sentiwordnet 3.0: An enhanced lexical resource for sentiment analysis and opinion mining", in Calzolari, N. and al., editor, *Proceedings of LREC*, 2200-2204, http://is.gd/VLTKqB
+
+Basile, V. and Nissim, M. (14 June 2013). "Sentiment analysis on Italian tweets", *Proceedings of the 4th Workshop on Computational Approaches to Subjectivity, Sentiment and Social Media Analysis*, 100-107. http://is.gd/io82rB
+
+Casotto, P. (2012). *Sentiment Analysis for the Italian Language*, Tesi di Dottorato, Dipartimento di matematica e Informatica, Universita' degli Studi di Udine.
+
+Cataldi, M., Ballatore, A., Tiddi, I., Aufaure, M.-A. (22 June 2013). "Good location, terrible food: detecting feature sentiment in user-generated reviews", *Social Network Analysis and Mining*, 3 (4): 1149–1163, http://is.gd/Tlp0Fc
+
+Charpentier, A. (22 February 2016). "Clusters of Texts", *Freakonometrics*, http://is.gd/32mB13
+
+Davidov, D., Tsur, O, and Rappoport, A. (2010). "Enhanced sentiment learning using twitter hashtags and smileys", *Proceedings of the 23rd International Conference on Computational Linguistics*, COLING ’10, 241–249, Stroudsburg, PA, USA.
+
+Galitsky, B. and McKenna, E.W. (12 November 2009). "Sentiment Extraction from Consumer Reviews for Providing Product Recommendations", Patent US-20090282019-A1, http://is.gd/ioVBsb
+
+Gonzales-Ibanez, R., Muresan, S. and Wacholder, N. (June 2011). "Identifying sarcasm in twitter: A closer look", *Proceedings of the 49th Annual Meet- ing of the Association for Computational Linguistics: Human Language Technologies*, 581–586, Portland, OR, USA.
+
+Gries, S.Th. (2013). *Statistics for Linguistics with R*, Second Edition, De Gruyter Mouton, Berlin.
+
+Jockers, M.L., (2014). *Text Analysis with R for Students of Literature*, Springer.
+
+Kennette, L.N., Wurm, L.H. and Van Havermaet, L.R. (2010). "Change detection: The effects of linguistic focus, hierarchical word level and proficiency", *The Mental Lexicon*, 5(1), 47–86.
+
+Kulkarni V., Rfou R., Perozzi B. and Skiena S. (2015). "Statistically Significant Detection of Linguistic Change", *Proceedings of the 24th International Conference on World Wide Web, 2015*.
+
+Lebeau, J. (20 January 2016). "State of the Union Speeches and Data", *More or Less Numbers*, http://is.gd/NrJIRS
+
+Liu, B. (2012). *Sentiment Analysis and Opinion Mining*, Synthesis Lectures on Human Language Technologies, Morgan & Claypool Publishers.
+
+Lapowsky, I. (13 January 2016). "The True Message of the State of the Union Is in the Data", *WIRED*, http://is.gd/7ULEdC
+
+Mani, I. (2010). *The Imagined Moment. Time, Narrative, and Computation*, University of Nebraska Press.
+
+Mejova, Y. (16 November 2009). "Sentiment Analysis: An Overview", http://is.gd/C1U9OJ
+
+Taboada, M., Brooke, J., Tofiloski, M., Voll, K. and Stede, M. (June 2011). "Lexicon-based methods for sentiment analysis", *Comput. Linguist.*, 37(2):267–307.
+
+Thelwall, M., Buckley, K., Paltoglou, G., Cai, D., Kappas, A, (2010). "Sentiment strength detection in short informal text", *Journal of the American Society for Information Science and Technology*, 61 (12): 2544–2558, http://is.gd/yRnRCq
+
+Vryniotis, V. (23 September 2013). "The importance of Neutral Class in Sentiment Analysis", *Machine Learning Blog & Software Development News*, http://is.gd/FidS0k
+
+
+&nbsp;
+
+
+&nbsp;
+
+
+
+
+
+```{r bib, include=FALSE}
+# KEEP THIS AT THE END OF THE DOCUMENT TO GENERATE A LOCAL bib FILE FOR PKGS USED
+knitr::write_bib(sub("^package:", "", grep("package", search(), value=TRUE)), file='skeleton.bib')
+```
