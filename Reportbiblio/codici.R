@@ -39,12 +39,51 @@ summary(netStat, k=10)
 
 
 M=metaTagExtraction(izsler,"CR_SO",sep=";")
+
 NetMatrix <- biblioNetwork(M, analysis = "co-citation", network = "sources", sep = ";")
-net=networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network", 
-                type = "auto", size.cex=TRUE, size=20, 
-                remove.multiple=FALSE, labelsize=0.7,edgesize = 15, edges.min=0.1)
+net=networkPlot(NetMatrix, n = 30, Title = "Co-Citation Network", 
+                type = "auto", size.cex=TRUE, size=10, 
+                remove.multiple=TRUE)
 
 
+
+NetMatrix<- biblioNetwork(izsler, analysis = "coupling", network = "authors", sep = ";")
+
+net=networkPlot(NetMatrix, n = 20, Title = "Authors' Coupling", 
+                type = "fruchterman", size=10, remove.multiple=TRUE)
+
+
+
+NetMatrix<-biblioNetwork(izsler, analysis = "collaboration", network = "authors", sep = ";")
+net=networkPlot(NetMatrix, n = 20, Title = "Bibliographic collaboration", type = "fruchterman", 
+                size=10, remove.multiple=TRUE)
+
+
+
+
+NetMatrix <- biblioNetwork(izsler, analysis = "co-occurrences", network = "keywords", sep = ";")
+
+net=networkPlot(NetMatrix, n = 50, Title = "Keyword Co-occurrences", type = "kamada", size=T)
+
+histResults <- histNetwork(izsler, min.citations=quantile(izsler$TC,0.75), sep = ";")
+
+options(width = 130)
+net <- histPlot(histResults, n=10, size = 5, labelsize = 3)
+
+
+NetMatrix <- biblioNetwork(izsler, analysis = "collaboration",  network = "authors", sep = ";")
+net=networkPlot(NetMatrix,  n = 30, 
+                Title = "Author collaboration",type = "auto", size=10,size.cex=T,edgesize = 3,labelsize=0.6)
+
+
+NetMatrix <- biblioNetwork(izsler, analysis = "collaboration",  network = "universities", sep = ";")
+net=networkPlot(NetMatrix,  n = 30, Title = "Edu collaboration",type = "auto", size=10,size.cex=T,edgesize = 3,labelsize=0.6)
+
+
+
+M <- metaTagExtraction(izsler, Field = "AU_CO", sep = ";")
+NetMatrix <- biblioNetwork(M, analysis = "collaboration",  network = "countries", sep = ";")
+net=networkPlot(NetMatrix,  n = dim(NetMatrix)[1], Title = "Country collaboration",type = "circle", size=10,size.cex=T,edgesize = 1,labelsize=0.6, cluster="none")
 
 
 j<-izsler%>% 
