@@ -51,9 +51,12 @@ ds %>%
   ggplot(aes(x=Formazione,   y=wordCount))+geom_boxplot()+coord_flip()+
   geom_jitter(shape=16, position=position_jitter(0.2))+ facet_wrap(Professione~Ruolo)
 
-# ds %>% 
-#   ggplot(aes(x=Ruolo,   y=wordCount))+geom_boxplot()+coord_flip()
 
+t<-tibble( x=1, "m"=median(ds$wordCount))
+ 
+ds %>% 
+   ggplot(aes(x=Ruolo,y=wordCount))+geom_boxplot()+coord_flip()+
+  geom_jitter(width = 0.2)
 
 
 f<-ds %>% 
@@ -123,7 +126,8 @@ custom.stopwords<-c(stopwords('italian'), "ricerca","izsler","ricerche",
                     "potrebbero", "possibilità", "solo", "alcuni", "lungo", "far", "fare", "sempre",
                     "esempio", "diverse", "coinvolto", "personale",  "rapporti","parte",
                     "figure", "livello", "tali", "necessario", "stesura", "gestione", "risultati", "dedicate", "dedicato",
-                    "ecc", "fine", "soprattutto", "può", "avviene", "anni", "dopo", "ambito","corrente" )
+                    "ecc", "fine", "soprattutto", "può", "avviene", "anni", "dopo", "ambito","corrente",
+                    "supporto", "avere")
 
 
 corpus <- VCorpus(DataframeSource(risp))
@@ -149,14 +153,34 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 freq.df %>% 
   top_n(30,frequency ) %>% 
   ggplot(aes(x=reorder(word, frequency), y=frequency))+geom_bar(stat = "identity", fill='steelblue3')+
-  coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)+
-  theme(axis.text=element_text(size=12))+labs(x="termini", y="frequenza")
+  coord_flip()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=4.0)+
+  theme(axis.text=element_text(size=10))+labs(x="termini", y="frequenza")
 
 
 
 freq.term<-findFreqTerms(tdm, lowfreq = 12)
 
-plot(tdm, term=freq.term, corThreshold = 0.22)
+plot(tdm, term=freq.term, corThreshold = 0.22, we)
+
+
+
+freq.term <- findFreqTerms(tdm,lowfreq=12)  
+vtxcnt <- rowSums(cor(as.matrix(t(tdm[freq.term,])))>.5)-1
+plot(tdm,main=title,term=freq.term, corThreshold=0.22,
+     attrs=list(node=list(width=20,fontsize=74,fontcolor="blue",color="red")))
+
+
+
+
+mycols<-c("#f7fbff","#deebf7","#c6dbef",
+          "#9ecae1","#6baed6","#4292c6",
+          "#2171b5", "#084594")
+vc <- mycols[vtxcnt+1]
+names(vc) <- names(vtxcnt)
+pp <- plot(tdm,
+           terms = freq.term,
+           corThreshold = 0.22,
+           nodeAttrs=list(fillcolor=vc, size=3))
 
 ########WORD CLOUD###
 wordcloud2(freq.df, size=0.35)
