@@ -15,7 +15,15 @@ library(wordcloud)
 dati<-gs_title("Integrazione tecnico-scientifica alle attività amministrative a supporto della ricerca (Risposte)")
 ds <-gs_read(dati, ws="Risposte del modulo 1" )
 
-  
+
+dati$ABprototipo<-
+  revalue(dati$antibiotico, 
+          "Lincomicina"="Clindamicina", "Pirlimicina"="Clindamicina", 
+          "Enrofloxacin"="Danofloxacin", "Marbofloxacin"="Danofloxacin",
+          "Flumequina"="Acido Nalidixico", "Amoxicillina"="Ampicillina", 
+          "Apramicina"="Gentamicina","Cefalexina"="Cefalotina", "Cefoperazone"="Ceftiofur",
+          "Cefquinome"="Ceftiofur", "Cloxacillina"="Oxacillina",  "Penetamato Iodidrato" = "Penicillina G",
+          "Penicillina"="Penicillina G",  )
 
 ####TEXT MINING#####
 names(ds)[7]<-"risposta"
