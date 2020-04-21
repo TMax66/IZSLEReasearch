@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580376101106.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1280148574",
+    "id" : "B945C5F3",
+    "lastKnownWriteTime" : 1574241022,
+    "last_content_update" : 1574241022,
+    "path" : "D:/Dati/vito.tranquillo/gitProject/IZSLEReasearch/survey/global.R",
+    "project_path" : "global.R",
+    "properties" : {
+        "cursorPosition" : "22,0",
+        "scrollLine" : "11"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
