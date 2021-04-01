@@ -14,10 +14,10 @@ library(DT)
 library(knitr)
 library(kableExtra)
 
-izsler<- readFiles("wos1izsler.bib","wos2izsler.bib","wos3izsler.bib")
+izsler<- c("wos1izsler.bib","wos2izsler.bib","wos3izsler.bib")
 izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
-izsve<- readFiles("izve1.bib","izve2.bib","izve3.bib")
-izsve <- convert2df(izsve, dbsource = "wos", format = "bibtex")
+# izsve<- c("izve1.bib","izve2.bib","izve3.bib")
+# izsve <- convert2df(izsve, dbsource = "wos", format = "bibtex")
 
 results <-biblioAnalysis(izsler, sep = ";")
 S<-summary(results, k = 10, pause = FALSE)
