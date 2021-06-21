@@ -1,6 +1,0 @@
-"0","f<-ds %>% "
-"0","  group_by(Formazione) %>% "
-"0","  dplyr::summarise(Risposte=n(), ""Età media""=mean(`Età`, na.rm=TRUE),""Anni di Servizio""=median(Servizio, na.rm=TRUE)) %>% "
-"0","  mutate_if(is.numeric, funs(round(.,digits = 2))) "
-"0","  "
-"0","kable(f)"
