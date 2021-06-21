@@ -19,12 +19,8 @@ library("broom")
 library("forcats")
 library("patchwork")
 library("hrbrthemes")
-##PROGETTI DI RICERCA####
-
-
-
-
-
+  
+ 
 ###RATING RICERCATORI ####
 ##### da Incites ####
 ricercatori <- read_excel(here("Valutazione ricercatori", "ricercatori.xlsx"))
