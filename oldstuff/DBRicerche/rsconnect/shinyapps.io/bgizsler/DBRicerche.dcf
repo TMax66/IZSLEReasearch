@@ -1,0 +1,13 @@
+name: DBRicerche
+title: DBRicerche
+username:
+account: bgizsler
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1213708
+bundleId: 2444542
+url: https://bgizsler.shinyapps.io/DBRicerche/
+when: 1569428299.30921
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: topic_model 10 DocsToTopics.csv

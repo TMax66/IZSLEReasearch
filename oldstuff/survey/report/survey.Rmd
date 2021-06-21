@@ -1,0 +1,83 @@
+---
+title: "Indagine sulle esigenze tecnico-scientifiche a supporto della ricerca"
+output: html_notebook
+---
+
+
+
+```{r global, include=FALSE}
+library(shiny)
+library(shinydashboard)
+library (DT)
+library(tidyverse)
+library(googlesheets)
+library(topicmodels)
+library(tidytext)
+library(tm)
+library(ggthemes)
+library(wordcloud2)
+library(wordcloud)
+library(plyr)
+
+
+
+dati<-gs_title("Integrazione tecnico-scientifica alle attività amministrative a supporto della ricerca (Risposte)")
+ds <-gs_read(dati, ws="Risposte del modulo 1" )
+
+names(ds)[c(5,6,7,8)]<-c("Estero", "Ruolo", "Risposta", "Servizio")
+
+ds<- ds %>% drop_na(Risposta)
+ds<-ds %>% 
+  mutate(id=seq(1:dim(ds)[1]))
+ds$Professione<-revalue(ds$Professione, c("Collaboratore tecnico professionale addetto ai servizi di laboratorio"="Tecnico di laboratorio", "Tecnico sanitario di laboratorio biomedico"="Tecnico di laboratorio"))
+                         
+ds$Ruolo<-revalue(
+  ds$Ruolo, c(
+    "Tecnico" ="Tecnico di laboratorio" , 
+    "Collaboratore tecnico professionale addetto ai servizi di laboratorio"=
+      "Tecnico di laboratorio" , "professional e gestionale" ="Gestionale e tecnico/scientifico" , "gestionale e professional"  ="Gestionale e tecnico/scientifico" , "gestionale con mantenimento di attività tecnico-scientifica"="Gestionale e tecnico/scientifico" ))
+```
+
+```{r for, echo=FALSE}
+
+f<-ds %>% 
+  group_by(Formazione) %>% 
+  dplyr::summarise(Risposte=n(), "Età media"=mean(`Età`, na.rm=TRUE),"Anni di Servizio"=median(Servizio, na.rm=TRUE)) %>% 
+  mutate_if(is.numeric, funs(round(.,digits = 2))) 
+  
+  datatable(f,rownames = FALSE,option=list(dom = 't',searching = FALSE,paging = TRUE,autoWidth = TRUE) )
+```
+
+```{r prof, echo=FALSE}
+p<-ds %>% 
+  group_by(Professione) %>% 
+  dplyr::summarise(Risposte=n(), "Età media"=mean(`Età`, na.rm=TRUE),"Anni di Servizio"=median(Servizio, na.rm=TRUE)) %>% 
+  mutate_if(is.numeric, funs(round(.,digits = 2))) 
+  
+  datatable(p,rownames = FALSE,option=list(dom = 't',searching = FALSE,paging = TRUE,autoWidth = TRUE) )
+```
+
+```{r ruolo echo=FALSE}
+r<-ds %>% 
+  group_by(Ruolo) %>% 
+  dplyr::summarise(Risposte=n(), "Età media"=mean(`Età`, na.rm=TRUE),"Anni di Servizio"=median(Servizio, na.rm=TRUE)) %>% 
+  mutate_if(is.numeric, funs(round(.,digits = 2))) 
+  
+  datatable(r,rownames = FALSE,option=list(dom = 't',searching = FALSE,paging = TRUE,autoWidth = TRUE) )
+
+
+
+
+```
+
+
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
