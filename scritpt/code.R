@@ -12,20 +12,23 @@ library(topicmodels)
 library(tidytext)
 library(tm)
 library(ggthemes)
+library(here)
 
 
 
 #rm(list=ls())
 
-izsler<- readFiles("wos1izsler.bib","wos2izsler.bib","wos3izsler.bib")
-izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
+files<- c("izsler1.bib")#,"izsler2.bib","izsler3.bib")
 
+izsler <- convert2df(files, dbsource = "wos", format = "bibtex")
 
 
 #izsler<- readFiles("izsler.bib")
 #izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
 
+
 results <-biblioAnalysis(izsler, sep = ";")
+
 S<-summary(results, k = 10, pause = FALSE)
 
 
@@ -64,21 +67,6 @@ freq.df$word<-factor(freq.df$word, levels=unique(as.character(freq.df$word)))
 
 ggplot(freq.df[1:50,], aes(x=word, y=frequency))+geom_bar(stat = "identity", fill='darkred')+
   coord_flip()+theme_gdocs()+geom_text(aes(label=frequency), colour="white",hjust=1.25, size=5.0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 izsve<- readFiles("izsve.bib")
