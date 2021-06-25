@@ -18,14 +18,11 @@ library(here)
 
 #rm(list=ls())
 
-files<- c("izsler1.bib")#,"izsler2.bib","izsler3.bib")
-
+files<- here("data", c("izsler1.bib","izsler2.bib","izsler3.bib"))
 izsler <- convert2df(files, dbsource = "wos", format = "bibtex")
 
 
-#izsler<- readFiles("izsler.bib")
-#izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
-
+ 
 
 results <-biblioAnalysis(izsler, sep = ";")
 
