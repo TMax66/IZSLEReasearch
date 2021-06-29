@@ -3,10 +3,18 @@ source("librerie.R")
 ###RATING RICERCATORI ####
 ##### da Incites ####
 ricercatori <- read_excel(here("Valutazione ricercatori", "ricercatori_IZSLER_2016_2020.xls"))
-# #anag <- readRDS(here("programmazione", "data", "processed", "ANAGRAFE.rds"))
+# anag <- readRDS(here("data","anag.rds"))
+# 
+# anag %>% 
+#   select(Nome, Cognome, FineRapporto, Dirigente) %>% 
+#   unique() %>% View()
+
+
 # anag <- anag %>% 
 #   select(-REPARTO, -CENTRO_DI_COSTO) 
 
+ricercatori <- ricercatori %>% 
+  mutate(Name = ifelse(Name == "Bolzoni, G." | Name == "Bolzoni, Giuseppe", "BolzoniG", Name))  
 ricercatori$Cognome <- gsub(",.*$", "", ricercatori$Name)
 x <- ricercatori %>%
 mutate(Cognome = recode(Cognome, "Moreno" = "Moreno Martin", 
@@ -19,15 +27,15 @@ select(58, 3, 5, 7, 19, 27, 29,24, 34,37,38,  40, 43 ,  4, 6, 10, 12, 14, 15, 18
 
 df <- x %>% 
 group_by(Cognome) %>% 
-  summarise_at(1:13, sum) %>% 
+  summarise_at(1:12, sum) %>% 
   left_join(
     (x %>% 
       group_by(Cognome) %>% 
-      summarise_at(14:25, mean)), by= "Cognome"
+      summarise_at(13:25, mean)), by= "Cognome"
   )
 
 df <- df %>% 
-  mutate_if(is.numeric, scale2) %>% 
+  #mutate_if(is.numeric, scale2) %>% 
   column_to_rownames( "Cognome")
  
 
@@ -52,11 +60,27 @@ fviz_cluster(res.hcpc,
              main = "Factor map"
 )
 
-head(res.hcpc$data.clust, 10)
+tabella <- res.hcpc$data.clust 
 
-res.hcpc$desc.var$quanti
+tabella %>% 
+  rownames_to_column("Autore") %>% 
+  ggplot(aes(x=`Web of Science Documents`, y = `Citation Impact`, label = Autore, col = clust))+
+  geom_point()+
+  geom_text()
+ 
 
-res.hcpc$desc.ind$para
+library(knitr)
+library(kableExtra)
+
+
+ris <- res.hcpc$desc.var$quanti
+
+ris %>% 
+kable() %>% 
+  kable_styling()
+
+
+View(res.hcpc$desc.ind)
 
 
 cor.mat <- round(cor(df),2)
