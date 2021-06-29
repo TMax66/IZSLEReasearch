@@ -18,11 +18,109 @@ library(here)
 
 #rm(list=ls())
 
-files<- here("data", c("izsler1.bib","izsler2.bib","izsler3.bib"))
-izsler <- convert2df(files, dbsource = "wos", format = "bibtex")
+izsler <- here("data", c("izsler1.bib","izsler2.bib","izsler3.bib"))
+izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
 
 
- 
+izsve <- here("data", c("izsve1.bib","izsve2.bib","izsve3.bib", "izsve4.bib"))
+izsve <- convert2df(izsve, dbsource = "wos", format = "bibtex")
+
+
+izsam <- here("data", c("izsam1.bib","izsam2.bib"))
+izsam <- convert2df(izsam, dbsource = "wos", format = "bibtex")
+
+
+izspiem <- here("data", c("izspiem1.bib","izspiem2.bib"))
+izspiem <- convert2df(izspiem, dbsource = "wos", format = "bibtex")
+
+izsumbmarch <- here("data", c("izsumbmarch1.bib","izsumbmarch2.bib"))
+izsumbmarch <- convert2df(izsumbmarch, dbsource = "wos", format = "bibtex")
+
+izsicilia <- here("data", c("izsicilia1.bib","izsicilia2.bib"))
+izsicilia <- convert2df(izsicilia, dbsource = "wos", format = "bibtex")
+
+izslt <- here("data", c("izslt1.bib","izslt2.bib"))
+izslt <- convert2df(izslt, dbsource = "wos", format = "bibtex")
+
+izsmezz <- here("data", c("izsmezz1.bib","izsmezz2.bib"))
+izsmezz <- convert2df(izsmezz, dbsource = "wos", format = "bibtex")
+
+izspuglia <- here("data", c("izspuglia.bib"))
+izspuglia <- convert2df(izspuglia, dbsource = "wos", format = "bibtex")
+
+izssard <- here("data", c("izssard.bib"))
+izssard <- convert2df(izssard, dbsource = "wos", format = "bibtex")
+
+
+
+
+A <- izsler %>% 
+  group_by(PY) %>% 
+  summarise(n=n())   
+A$Istituto<-rep("izsler", dim(A)[1]) 
+
+B <- izsve %>% 
+  group_by(PY) %>% 
+  summarise(n=n())   
+B$Istituto<-rep("izsve", dim(B)[1])
+
+C <- izsam %>% 
+  group_by(PY) %>% 
+  summarise(n=n())  
+C$Istituto<-rep("izsam", dim(C)[1])
+
+
+D <- izspiem %>% 
+  group_by(PY) %>% 
+  summarise(n=n())
+D$Istituto<-rep("izspiem", dim(D)[1])
+
+
+E <- izsicilia %>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+
+E$Istituto<-rep("izsicilia", dim(E)[1])
+
+
+F <- izslt %>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+F$Istituto<-rep("izslt", dim(F)[1])
+
+
+G <- izsmezz %>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+G$Istituto<-rep("izsmezz", dim(G)[1])
+
+  
+
+
+
+
+
+
+
+
+prod<-rbind(A,B,C,D)
+
+prod %>% 
+  ggplot(aes(x=PY, y=n, group=Istituto, color=Istituto))+geom_line()+
+  labs(y="n.articoli", x="anno")+
+  scale_x_continuous(breaks=c(2005:2018))
+
+
+izsler %>% 
+  filter(PY>=2005 & PY<2019) %>% 
+  group_by(PY) %>% 
+  summarise(n=n()) %>% 
+  ggplot(aes(x=PY, y=n))+geom_point(stat = "identity")+
+  geom_line(stat="identity")+
+  labs(x="Anno di pubblicazione", y="Numero articoli pubblicati")+
+  scale_x_continuous(breaks=c(2005:2018))
+
+
 
 results <-biblioAnalysis(izsler, sep = ";")
 
@@ -77,51 +175,6 @@ izsto <- convert2df(izsto, dbsource = "scopus", format = "bibtex")
 
 ####produttività###
 
-A=izsler %>% 
-  group_by(PY) %>% 
-  summarise(n=n()) %>% 
-  filter(PY<2019 & PY>=2005)
-A$Istituto<-rep("izsler", dim(A)[1]) 
-
-B=izsve %>% 
-  group_by(PY) %>% 
-  summarise(n=n()) %>% 
-  filter(PY<2019 & PY>=2005)
-B$Istituto<-rep("izsve", dim(B)[1])
-
-C=izsam %>% 
-  group_by(PY) %>% 
-  summarise(n=n()) %>% 
-  filter(PY<2019 & PY>=2005) 
-
-C$Istituto<-rep("izsam", dim(C)[1])
-
-
-D=izsto %>% 
-  group_by(PY) %>% 
-  summarise(n=n()) %>% 
-  filter(PY<2019 & PY>=2005) 
-
-D$Istituto<-rep("izsto", dim(D)[1])
-
-
-
-prod<-rbind(A,B,C,D)
-
-prod %>% 
-  ggplot(aes(x=PY, y=n, group=Istituto, color=Istituto))+geom_line()+
-  labs(y="n.articoli", x="anno")+
-  scale_x_continuous(breaks=c(2005:2018))
-
-
-izsler %>% 
-  filter(PY>=2005 & PY<2019) %>% 
-  group_by(PY) %>% 
-  summarise(n=n()) %>% 
-  ggplot(aes(x=PY, y=n))+geom_point(stat = "identity")+
-  geom_line(stat="identity")+
-  labs(x="Anno di pubblicazione", y="Numero articoli pubblicati")+
-  scale_x_continuous(breaks=c(2005:2018))
 
 
 
