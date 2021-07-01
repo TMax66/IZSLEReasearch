@@ -39,9 +39,14 @@ df <- df %>%
   column_to_rownames( "Cognome")
  
 
+cor.mat <- round(cor(df),2)
+View(cor.mat)
 
-res.pca <- PCA(df, ncp = 3, graph = FALSE)
+
+res.pca <- PCA(df, ncp = 3, graph = FALSE, scale.unit = TRUE)
 res.hcpc <- HCPC(res.pca, graph = FALSE)
+
+fviz_screeplot(res.pca, ncp=10)
 
 fviz_dend(res.hcpc, 
           cex = 0.5,                     # Label size
@@ -66,7 +71,9 @@ tabella %>%
   rownames_to_column("Autore") %>% 
   ggplot(aes(x=`Web of Science Documents`, y = `Citation Impact`, label = Autore, col = clust))+
   geom_point()+
-  geom_text()
+  geom_text()+
+  theme_ipsum_rc()
+  
  
 
 library(knitr)
