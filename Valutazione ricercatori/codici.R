@@ -72,9 +72,16 @@ tabella %>%
   ggplot(aes(x=`Web of Science Documents`, y = `Citation Impact`, label = Autore, col = clust))+
   geom_point()+
   geom_text()+
-  theme_ipsum_rc()
+  theme_ipsum_rc()+
+  scale_color_ipsum()
   
  
+
+tabella %>% 
+  pivot_longer(cols = 1:12,  names_to = "indicatore", values_to = "valore") %>% 
+  ggplot(aes(y= valore , x = clust))+
+  stat_halfeye()+
+  facet_wrap(~indicatore)
 
 library(knitr)
 library(kableExtra)
