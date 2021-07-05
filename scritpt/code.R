@@ -94,7 +94,20 @@ G <- izsmezz %>%
   summarise(n = n())
 G$Istituto<-rep("izsmezz", dim(G)[1])
 
-  
+H <- izssard %>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+H$Istituto<-rep("izssard", dim(H)[1])
+
+I <- izspuglia %>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+I$Istituto<-rep("izspuglia", dim(I)[1])  
+
+L <- izsumbmarch%>% 
+  group_by(PY) %>% 
+  summarise(n = n())
+L$Istituto<-rep("izsumbmarche", dim(L)[1])
 
 
 
@@ -103,29 +116,62 @@ G$Istituto<-rep("izsmezz", dim(G)[1])
 
 
 
-prod<-rbind(A,B,C,D)
+prod<-rbind(A,B,C,D, E, F, G, H, I, L)
 
 prod %>% 
-  ggplot(aes(x=PY, y=n, group=Istituto, color=Istituto))+geom_line()+
+  filter(PY< 2021 & Istituto == "izsler" ) %>% 
+  ggplot(aes(x=PY, y=n, group=Istituto))+  
   labs(y="n.articoli", x="anno")+
-  scale_x_continuous(breaks=c(2005:2018))
+  geom_smooth()+ geom_line() +geom_point()+
+  theme_ipsum(axis_title_size = 15)+
+  geom_text(aes(x= 2000, y = 95), label = "Tasso di crescita annuale = 6.82%", size = 8)+
+  labs(title = "Produzione scientifica dell'IZSLER", 
+       subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
+       x = " Anno di pubblicazione", y = "n. di articoli")
+  
+  
+  #scale_x_continuous(breaks=c(2005:2018))
 
 
 izsler %>% 
-  filter(PY>=2005 & PY<2019) %>% 
+  filter(PY>=2005 & PY<=2020) %>% 
   group_by(PY) %>% 
   summarise(n=n()) %>% 
   ggplot(aes(x=PY, y=n))+geom_point(stat = "identity")+
   geom_line(stat="identity")+
   labs(x="Anno di pubblicazione", y="Numero articoli pubblicati")+
-  scale_x_continuous(breaks=c(2005:2018))
+  scale_x_continuous(breaks=c(2005:2020))
 
 
 
-results <-biblioAnalysis(izsler, sep = ";")
+izsler_res <-biblioAnalysis(izsler, sep = ";")
+izsve_res <- biblioAnalysis(izsve,  sep = ";")
 
-S<-summary(results, k = 10, pause = FALSE)
+S_izsler <- summary(izsler_res, k = 10)
+S_izsve <- summary(izsler_res, k = 10, pause = FALSE)
 
+
+pubrate <- function(istituto)
+{
+  
+  M <- biblioAnalysis(istituto, sep = ";" )
+  
+  Y <- data.frame(table(M$Years))
+  
+  ny <- max(as.numeric(levels(Y[,1])),na.rm=TRUE)-min(as.numeric(levels(Y[,1])),na.rm=TRUE)
+  
+  GR <- ((Y[nrow(Y),2]/Y[1,2])^(1/(ny))-1)*100
+  
+  GR
+
+ 
+}
+
+
+pubrate(istituto = izssard)
+  
+  
+  
 
 ####TEXT MINING#####
 tryTolower<-function(x){
