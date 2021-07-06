@@ -13,110 +13,16 @@ library(tidytext)
 library(tm)
 library(ggthemes)
 library(here)
-
+library(hrbrthemes)
+library(cowplot)
 
 
 #rm(list=ls())
 
-izsler <- here("data", c("izsler1.bib","izsler2.bib","izsler3.bib"))
-izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
+ 
 
+source(pat, "dati.R", local = TRUE)
 
-izsve <- here("data", c("izsve1.bib","izsve2.bib","izsve3.bib", "izsve4.bib"))
-izsve <- convert2df(izsve, dbsource = "wos", format = "bibtex")
-
-
-izsam <- here("data", c("izsam1.bib","izsam2.bib"))
-izsam <- convert2df(izsam, dbsource = "wos", format = "bibtex")
-
-
-izspiem <- here("data", c("izspiem1.bib","izspiem2.bib"))
-izspiem <- convert2df(izspiem, dbsource = "wos", format = "bibtex")
-
-izsumbmarch <- here("data", c("izsumbmarch1.bib","izsumbmarch2.bib"))
-izsumbmarch <- convert2df(izsumbmarch, dbsource = "wos", format = "bibtex")
-
-izsicilia <- here("data", c("izsicilia1.bib","izsicilia2.bib"))
-izsicilia <- convert2df(izsicilia, dbsource = "wos", format = "bibtex")
-
-izslt <- here("data", c("izslt1.bib","izslt2.bib"))
-izslt <- convert2df(izslt, dbsource = "wos", format = "bibtex")
-
-izsmezz <- here("data", c("izsmezz1.bib","izsmezz2.bib"))
-izsmezz <- convert2df(izsmezz, dbsource = "wos", format = "bibtex")
-
-izspuglia <- here("data", c("izspuglia.bib"))
-izspuglia <- convert2df(izspuglia, dbsource = "wos", format = "bibtex")
-
-izssard <- here("data", c("izssard.bib"))
-izssard <- convert2df(izssard, dbsource = "wos", format = "bibtex")
-
-
-
-
-A <- izsler %>% 
-  group_by(PY) %>% 
-  summarise(n=n())   
-A$Istituto<-rep("izsler", dim(A)[1]) 
-
-B <- izsve %>% 
-  group_by(PY) %>% 
-  summarise(n=n())   
-B$Istituto<-rep("izsve", dim(B)[1])
-
-C <- izsam %>% 
-  group_by(PY) %>% 
-  summarise(n=n())  
-C$Istituto<-rep("izsam", dim(C)[1])
-
-
-D <- izspiem %>% 
-  group_by(PY) %>% 
-  summarise(n=n())
-D$Istituto<-rep("izspiem", dim(D)[1])
-
-
-E <- izsicilia %>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-
-E$Istituto<-rep("izsicilia", dim(E)[1])
-
-
-F <- izslt %>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-F$Istituto<-rep("izslt", dim(F)[1])
-
-
-G <- izsmezz %>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-G$Istituto<-rep("izsmezz", dim(G)[1])
-
-H <- izssard %>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-H$Istituto<-rep("izssard", dim(H)[1])
-
-I <- izspuglia %>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-I$Istituto<-rep("izspuglia", dim(I)[1])  
-
-L <- izsumbmarch%>% 
-  group_by(PY) %>% 
-  summarise(n = n())
-L$Istituto<-rep("izsumbmarche", dim(L)[1])
-
-
-
-
-
-
-
-
-prod<-rbind(A,B,C,D, E, F, G, H, I, L)
 
 prod %>% 
   filter(PY< 2021 & Istituto == "izsler" ) %>% 
@@ -124,7 +30,7 @@ prod %>%
   labs(y="n.articoli", x="anno")+
   geom_smooth()+ geom_line() +geom_point()+
   theme_ipsum(axis_title_size = 15)+
-  geom_text(aes(x= 2000, y = 95), label = "Tasso di crescita annuale = 6.82%", size = 8)+
+  geom_text(aes(x= 2000, y = 95), label = "Tasso annuo di crescita  percentuale = 6.82%", size = 8)+
   labs(title = "Produzione scientifica dell'IZSLER", 
        subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
        x = " Anno di pubblicazione", y = "n. di articoli")
@@ -168,10 +74,68 @@ pubrate <- function(istituto)
 }
 
 
-pubrate(istituto = izssard)
+pubrate(istituto = izsicilia)
+
+
+
+
+
+
+  
+IZS <-list(izsam,izsicilia, izsler, izslt, izsmezz, izspiem,  izspuglia, izssard, izsumbmarch, izsve)
+
+
+
+gr <- lapply(IZS, pubrate)
+
+grizs <- do.call(rbind, gr)
+
+gr.frame <- data.frame( "Istituto" = c("izsam","izsicilia", "izsler", 
+                                       "izslt", "izsmezz", "izspiem",  "izspuglia", "izssard", "izsumbmarch", "izsve"), 
+                        grizs)
+ 
+p <- gr.frame %>% 
+  mutate(Istituto = fct_reorder(Istituto, grizs)) %>%
+  ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
+  geom_point(size = 14, col = "lightblue")+
+  geom_text()+
+  coord_flip()+
+  geom_segment(aes(y=0, yend=grizs-0.2, x=Istituto, xend=Istituto))+
+  theme_ipsum(axis_title_size = 15)+
+  theme(axis.text.y = element_blank())+
+  labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale", 
+       subtitle = "fonte dati: Web of Science", 
+       y = " Tasso annuo di crescita  percentuale", x = "")
+
+ 
+pimage <- axis_canvas(p, axis = 'y') +
+  draw_image("Valutazione ricercatori/izsumb.png", y= 0, scale = 1.8)+
+  draw_image("Valutazione ricercatori/izsardegna.jpg", y = 1, scale= 0.8)+
+  draw_image("Valutazione ricercatori/izsicilia.jpg", y = 2.4)+
+  draw_image("Valutazione ricercatori/izsler.png", y = 3.8, scale = 1.3)+
+  draw_image("Valutazione ricercatori/izsve.png", y = 5, scale = 1.2)+
+  draw_image("Valutazione ricercatori/izsam.jfif", y = 6.2)+
+  draw_image("Valutazione ricercatori/izspiem.jpg", y= 7.5, scale = 1.2)+
+  draw_image("Valutazione ricercatori/izslt.png", y = 9, scale = 0.8)+
+  draw_image("Valutazione ricercatori/izsmezz.jpg", y = 10.5, scale = 1.5)+
+  draw_image("Valutazione ricercatori/izspuglia.jpg", y = 11.8)
+  
+  
+ggdraw(insert_yaxis_grob(p, pimage, position = "left"))
   
   
   
+  
+  
+  
+  
+
+
+
+
+
+
+
 
 ####TEXT MINING#####
 tryTolower<-function(x){
