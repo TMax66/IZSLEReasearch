@@ -15,6 +15,7 @@ library(ggthemes)
 library(here)
 library(hrbrthemes)
 library(cowplot)
+library(ggrepel)
 
 
 #rm(list=ls())
@@ -35,7 +36,44 @@ prod %>%
        subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
        x = " Anno di pubblicazione", y = "n. di articoli")
   
+
+
+prod %>% 
+  mutate(Istituto= recode(Istituto, izsler = "IZSLER", 
+                          izsam = "IZSAM", 
+                          izsve = "IZSVE", 
+                          izsicilia = "IZS Sicilia", 
+                          izslt = "IZSLT", 
+                          izsmezz = "IZS Mezzogiorno", 
+                          izspiem = "IZSTO", 
+                          izspuglia = "IZS Puglia Basilicata", 
+                          izssard = "IZS Sardegna", 
+                          izsumbmarche = "IZSUM")) %>% 
+  filter(PY >= 2016& PY < 2021 ) %>%  
+  mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_)) %>%  
   
+  ggplot(aes(x=PY, y=n, label = n))+  
+  labs(y="n.articoli", x="anno")+
+  ylim(c(0,130))+
+  geom_line()+ geom_point(size = 10, col = "lightgrey")+
+  geom_text()+
+  # geom_label_repel(aes(label = lab), 
+  #                  nudge_x = 3,
+  #                  na.rm = TRUE)+
+  theme_ipsum(axis_title_size = 15)+
+    theme(legend.position = "none")+facet_wrap(~Istituto)+
+  labs(title = "Produzione scientifica degli IIZZSS periodo 2016-2020", 
+       subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
+       x = " Anno di pubblicazione", y = "n. di articoli")
+
+
+ 
+  # geom_text(aes(x= 2000, y = 95), label = "Tasso annuo di crescita  percentuale = 6.82%", size = 8)+
+  # labs(title = "Produzione scientifica dell'IZSLER", 
+  #      subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
+  #      x = " Anno di pubblicazione", y = "n. di articoli")
+
+
   #scale_x_continuous(breaks=c(2005:2018))
 
 
@@ -57,10 +95,16 @@ S_izsler <- summary(izsler_res, k = 10)
 S_izsve <- summary(izsler_res, k = 10, pause = FALSE)
 
 
+
+x <- izspuglia %>% 
+  filter(PY >= 2016 & PY < 2021 )
+
 pubrate <- function(istituto)
 {
+  ist <- istituto %>% 
+    filter(PY >= 2016& PY < 2021 ) 
   
-  M <- biblioAnalysis(istituto, sep = ";" )
+  M <- biblioAnalysis(ist, sep = ";" )
   
   Y <- data.frame(table(M$Years))
   
@@ -100,27 +144,27 @@ p <- gr.frame %>%
   geom_point(size = 14, col = "lightblue")+
   geom_text()+
   coord_flip()+
-  geom_segment(aes(y=0, yend=grizs-0.2, x=Istituto, xend=Istituto))+
+  geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "darkgrey")+
   theme_ipsum(axis_title_size = 15)+
   theme(axis.text.y = element_blank())+
-  labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale", 
+  labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale nel periodo 2016-2020", 
        subtitle = "fonte dati: Web of Science", 
        y = " Tasso annuo di crescita  percentuale", x = "")
 
  
 pimage <- axis_canvas(p, axis = 'y') +
-  draw_image("Valutazione ricercatori/izsumb.png", y= 0, scale = 1.8)+
-  draw_image("Valutazione ricercatori/izsardegna.jpg", y = 1, scale= 0.8)+
-  draw_image("Valutazione ricercatori/izsicilia.jpg", y = 2.4)+
-  draw_image("Valutazione ricercatori/izsler.png", y = 3.8, scale = 1.3)+
-  draw_image("Valutazione ricercatori/izsve.png", y = 5, scale = 1.2)+
-  draw_image("Valutazione ricercatori/izsam.jfif", y = 6.2)+
-  draw_image("Valutazione ricercatori/izspiem.jpg", y= 7.5, scale = 1.2)+
-  draw_image("Valutazione ricercatori/izslt.png", y = 9, scale = 0.8)+
-  draw_image("Valutazione ricercatori/izsmezz.jpg", y = 10.5, scale = 1.5)+
-  draw_image("Valutazione ricercatori/izspuglia.jpg", y = 11.8)
-  
-  
+  draw_image("Valutazione ricercatori/izsumb.png", y= -10.6, scale = 3.5)+
+  draw_image("Valutazione ricercatori/izspuglia.jpg", y = -8, scale = 2.8)+
+  draw_image("Valutazione ricercatori/izsve.png", y = -5, scale = 3)+
+  draw_image("Valutazione ricercatori/izspiem.jpg", y= -2, scale = 3)+
+  draw_image("Valutazione ricercatori/izsam.jfif", y = 1, scale = 2.2)+
+  draw_image("Valutazione ricercatori/izsler.png", y = 4, scale = 3)+
+  draw_image("Valutazione ricercatori/izslt.png", y = 6.8, scale = 1.5)+
+  draw_image("Valutazione ricercatori/izsmezz.jpg", y = 10, scale = 3)+
+  draw_image("Valutazione ricercatori/izsicilia.jpg", y = 13, scale = 2)+
+  draw_image("Valutazione ricercatori/izsardegna.jpg", y = 16.5, scale= 2)
+
+
 ggdraw(insert_yaxis_grob(p, pimage, position = "left"))
   
   
