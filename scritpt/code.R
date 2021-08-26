@@ -18,12 +18,25 @@ library(cowplot)
 library(ggrepel)
 
 
-#rm(list=ls())
+# Last.Name <- c("Tranquillo", "Merialdi", "Lavazza", "Pongolini", "Varisco")
+# First.Name <- c("Vito", "Giuseppe", "Antonio", "Stefano", "Giorgio")
+# df <- data.frame(Last.Name, First.Name)
+# 
+# 
+# library(purrr)
+# library(scholar)
+# p_get_scholar_id <- possibly(get_scholar_id, otherwise = NA_character_)
+# scholars <- character(nrow(df))
+# for(i in seq_along(scholars)) {
+#   scholars[i] <- p_get_scholar_id(last_name = df$Last.Name[i], 
+#                                   first_name = df$First.Name[i])
+# }
+# 
+# id <- "tthQ_DQAAAAJ&hl"
+# 
+# p <- get_publications(id)
 
- 
-
-source(pat, "dati.R", local = TRUE)
-
+source("dati.R")
 
 prod %>% 
   filter(PY< 2021 & Istituto == "izsler" ) %>% 
