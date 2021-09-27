@@ -36,7 +36,7 @@ library(ggrepel)
 # 
 # p <- get_publications(id)
 
-source("dati.R")
+source( "dati.R")
 
 prod %>% 
   filter(PY< 2021 & Istituto == "izsler" ) %>% 
