@@ -11,64 +11,122 @@ abstrEst <- read_excel("data/valutazione abstract approvati da ministero.xlsx",
 abstrInt <- read_excel("data/valutazione abstract approvati da ministero.xlsx", 
                                                                 sheet = "interni")
 
-deletedpr <- c(3,5, 6, 7, 9, 11, 13, 19, 26,29)
-              
 
-abstrEst %>% 
-  pivot_longer(cols = 8:11, names_to = "area", values_to = "score")  %>%
-  select(-7) %>% 
-  bind_rows(
-    abstrInt %>% 
-      pivot_longer(cols = 7:11, names_to = "area", values_to = "score")
-  ) %>% 
-  mutate(approvazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati dal Ministero", 
-                               "Approvati dal Ministero")) %>%  
-  filter(approvazione == "Non Approvati dal Ministero") %>% 
-  group_by(Progetto) %>% 
-  summarise(MScore = round(mean(score, na.rm = TRUE),2), 
-            Score = sum(score, na.rm = TRUE) )%>% 
-  pivot_longer(cols = 2:3, names_to = "Valutazione", values_to = "Punteggio") %>% 
-  filter(Valutazione == "Score") %>%  
-  mutate(Progetto = factor(Progetto)) %>% 
-  ggplot(aes(x = fct_reorder(Progetto, Punteggio), y = Punteggio, label = Punteggio))+
-  geom_point(size = 9.5, col= "gray", alpha = 0.8)+
-  geom_text(size = 4)+
-  geom_segment(aes(y = 0, x = Progetto, yend = Punteggio-1, xend = Progetto))+ 
-  coord_flip()+ 
-  theme_ipsum(axis_title_size = 15)+
-  theme_minimal() + labs(title = "Progetti non approvati dal Ministero", y = "Somma punteggi", x = "Codice Progetto")
-  
+
+
 
 dt <- abstrEst %>% 
-  pivot_longer(cols = 8:11, names_to = "area", values_to = "score")  %>%
-  select(-7) %>% 
-  bind_rows(
-    abstrInt %>% 
-      pivot_longer(cols = 7:11, names_to = "area", values_to = "score")
-  ) %>% View()
-   
+    pivot_longer(cols = 7:10, names_to = "area", values_to = "score")  %>%
+    bind_rows(
+      abstrInt %>%
+        pivot_longer(cols = 7:11, names_to = "area", values_to = "score")
+    )
+
+
+
+library(GGally)
+ x <- abstrEst[, 7:10]
+ 
+x <- x %>% 
+  mutate_if(is.numeric, factor)
+library(GDAtools)
+ggpairs(x, 
+        axisLabels = "internal",
+        showStrips = TRUE, 
+        upper = list( discrete = ggassoc_crosstab))
+
+dt <- abstrEst %>% 
+pivot_longer(cols = 7:10, names_to = "area", values_to = "score") %>% 
+  mutate(score2 = ifelse(score == 1, "scarso", 
+                                                ifelse(score == 2, "sufficiente",
+                                                       ifelse(score == 3, "buono",
+                                                              ifelse(score == 4, "molto buono", "eccellente"))))) %>% 
+  mutate(score2 = factor(score2, levels= c("scarso","sufficiente", "buono","molto buono" ,"eccellente" )))
+
+dt %>% 
+  filter(area == "Impatto" ) %>% 
+  ggplot(aes(x=score2))+
+  geom_bar()+  coord_flip()+
+  facet_wrap(~Progetto)
+ 
+
+
+ggpairs(tips[, 3:6], 
+        axisLabels = "internal",
+        showStrips = TRUE)
+
+
+
+library("gplots")
+
+library(fastDummies)
+
+dummydt <- abstrEst %>%
+  select(7:10) %>%
+  dummy_cols(remove_selected_columns = TRUE)
+
+
+
+df<-data.frame(dt[, 9],dummydt)
 
 
 
 
 
-#facet_wrap(Valutazione~approvazione, scale="free")
 
-  
-# abstrEst %>% 
-#     pivot_longer(cols = 8:11, names_to = "area", values_to = "score")  %>%
-#     select(-7) %>% 
-#     bind_rows(
-#       abstrInt %>% 
-#         pivot_longer(cols = 7:11, names_to = "area", values_to = "score")
-#     ) %>% 
-#     mutate(approvazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati dal Ministero", "Approvati dal Ministero"), 
-#            Referee = ifelse(referee %in% c(1,2,3), "Esterni", "Interni"))  %>% 
-#     group_by(Progetto, Referee) %>% 
-#     summarise(#Score = sum(score, na.rm = TRUE), 
-#               MScore = mean(score,  na.rm = TRUE)) %>%
-#     pivot_wider(names_from = "Referee", values_from = "MScore") %>%   
-#     ggplot(aes(x=Esterni, y=Interni, label = Progetto ))+
-#     geom_point(size = 8.5, col="gray50")+
-#     geom_text()
+tabella <-  df %>%
+  group_by(ageclass) %>%
+  summarise_all(sum, na.rm = T)  %>%
+  select(ageclass, ends_with("P")) %>% View()
+  column_to_rownames(var="ageclass") %>%
+  as.data.frame() %>%
+  select(1:5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# abstrInt %>% 
+#   select(-`Attinenza linee ministeriali`) %>% 
+#   rename()
+
+
+# dt <- abstrEst %>% 
+#   pivot_longer(cols = 7:10, names_to = "area", values_to = "score")  %>%
+#   bind_rows(
+#     abstrInt %>% 
+#       pivot_longer(cols = 7:11, names_to = "area", values_to = "score")
+#   ) %>% 
+#   pivot_wider(names_from = "area", values_from = "score") %>% View()
+#    
+
+
+
+# dt <- abstrEst %>% 
+#   select(7:10) %>% 
+#   mutate_all(factor)
+
+
+
+# pivot_longer(cols = 7:10, names_to = "area", values_to = "score") %>% 
+# mutate(score2 = ifelse(score == 1, "scarso", 
+#                        ifelse(score == 2, "sufficiente",
+#                               ifelse(score == 3, "buono", 
+#                                      ifelse(score == 4, "molto buono", "eccellente"))))) %>% 
+#  mutate(id = seq(1:nrow(.))) %>% 
+# select(id, area, score2) %>% 
+#  pivot_wider(names_from = "area", values_from = score2) %>% distinct()
 
