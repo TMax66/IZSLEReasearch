@@ -43,10 +43,47 @@ pivot_longer(cols = 7:10, names_to = "area", values_to = "score") %>%
                                                               ifelse(score == 4, "molto buono", "eccellente"))))) %>% 
   mutate(score2 = factor(score2, levels= c("scarso","sufficiente", "buono","molto buono" ,"eccellente" )))
 
+
+
+dt <- abstrEst %>% 
+  mutate(across(7:10, ~recode(., "1" =  "scarso", 
+                             "2" =  "sufficiente", 
+                             "3" = "buono", 
+                             "4" = "molto buono", 
+                             "5" = "eccellente")),  
+         Progetto = as.character(Progetto), 
+         referee = as.character(referee)) %>% 
+  select(1, 6:10)
+
+library("FactoMineR")
+library("factoextra")
+
+x <- MCA(dt[, -2] , quali.sup = 1, graph = FALSE)
+
+fviz_mca_var(x, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE, # Avoid text overlapping
+             ggtheme = theme_minimal())
+
+
+fviz_mca_var(x, col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07", "#FC0000"), 
+             repel = TRUE, # avoid text overlapping (slow)
+             ggtheme = theme_minimal())
+
+fviz_mca_biplot(x, repel = TRUE,
+                ggtheme = theme_minimal())
+
+
+fviz_mca_ind(x, col.ind = "cos2", 
+             #gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE, # Avoid text overlapping (slow if many points)
+             ggtheme = theme_minimal())
+
 dt %>% 
   filter(area == "Impatto" ) %>% 
   ggplot(aes(x=score2))+
-  geom_bar()+  coord_flip()+
+  geom_bar()+  coord_flip()+ labs(x = "")+
   facet_wrap(~Progetto)
  
 
