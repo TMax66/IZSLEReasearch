@@ -27,24 +27,27 @@ abstrInt <- read_excel("data/valutazione abstract approvati da ministero.xlsx",
 
 
 # library(GGally)
-#  x <- abstrEst[, 7:10]
-#  
-# x <- x %>% 
-#   mutate_if(is.numeric, factor)
-# library(GDAtools)
-# ggpairs(x, 
-#         axisLabels = "internal",
-#         showStrips = TRUE, 
-#         upper = list( discrete = ggassoc_crosstab))
-# 
-# 
-# dt <- abstrEst %>% 
-# pivot_longer(cols = 7:10, names_to = "area", values_to = "score") %>% 
-#   mutate(score2 = ifelse(score == 1, "scarso", 
-#                                                 ifelse(score == 2, "sufficiente",
-#                                                        ifelse(score == 3, "buono",
-#                                                               ifelse(score == 4, "molto buono", "eccellente"))))) %>% 
-#   mutate(score2 = factor(score2, levels= c("scarso","sufficiente", "buono","molto buono" ,"eccellente" )))
+x <- abstrEst[, 7:10]
+
+x <- x %>%
+  mutate_if(is.numeric, factor)
+library(GDAtools)
+ggpairs(x,
+        axisLabels = "internal",
+        showStrips = TRUE,
+        upper = list( discrete = ggassoc_crosstab))
+
+
+dt <- abstrEst %>%
+  pivot_longer(cols = 7:10, names_to = "area", values_to = "score") %>%
+  mutate(score2 = ifelse(score == 1, "scarso",
+    ifelse(score == 2, "sufficiente",
+      ifelse(score == 3, "buono",
+        ifelse(score == 4, "molto buono", "eccellente")
+      )
+    )
+  )) %>%
+  mutate(score2 = factor(score2, levels = c("scarso", "sufficiente", "buono", "molto buono", "eccellente")))
 
 #MCA----
 library("FactoMineR")
@@ -153,13 +156,36 @@ fviz_mca_biplot(x2, repel = TRUE,
 
 
 
-# dt %>% 
-#   filter(area == "Impatto" ) %>% 
-#   ggplot(aes(x=score2))+
-#   geom_bar()+  coord_flip()+ labs(x = "")+
-#   facet_wrap(~Progetto)
-#  
-# 
+dt %>%
+  group_by(area, score2, Progetto) %>% 
+  summarise(n= n()) %>% 
+  ggplot(aes(score2,area , label = n)) +
+  geom_tile( fill = "white")+
+  facet_wrap(~Progetto)+
+  geom_text()+
+  theme_ipsum_rc()
+  
+
+
+
+
+  # #filter(area == "Impatto" ) %>%
+  # ggplot(aes(x=score2))+
+  #    facet
+  # 
+  # geom_bar()+  coord_flip()+ labs(x = "")+
+  # facet_grid(area~Progetto)
+
+
+
+x <- LETTERS[1:20]
+y <- paste0("var", seq(1,20))
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
+
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile()
+
 # 
 # ggpairs(tips[, 3:6], 
 #         axisLabels = "internal",
