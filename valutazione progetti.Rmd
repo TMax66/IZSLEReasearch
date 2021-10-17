@@ -34,13 +34,14 @@ abstrEst %>%
       pivot_longer(cols = 7:11, names_to = "area", values_to = "score")) %>% 
   mutate(approvazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati dal Ministero", 
                                "Approvati dal Ministero")) %>%  
-  filter(approvazione == "Approvati dal Ministero") %>% 
+  filter(approvazione == "Approvati dal Ministero") %>% View()
   group_by(Progetto) %>% 
   summarise(MScore = round(mean(score, na.rm = TRUE),2), 
             Score = sum(score, na.rm = TRUE) )%>% 
   pivot_longer(cols = 2:3, names_to = "Valutazione", values_to = "Punteggio") %>%  
   filter(Valutazione == "Score") %>%  
-  mutate(Progetto = factor(Progetto)) %>% 
+  mutate(Progetto = factor(Progetto), 
+         rank = row_number()) %>% 
   ggplot(aes(x = fct_reorder(Progetto, Punteggio), y = Punteggio, label = Punteggio))+
   geom_point(size = 9.5, col= "gray", alpha = 0.8)+
   geom_text(size = 4)+
