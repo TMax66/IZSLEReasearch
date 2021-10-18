@@ -18,8 +18,11 @@ abstrEst %>%
   bind_rows(
     abstrInt %>% 
       pivot_longer(cols = 7:11, names_to = "area", values_to = "score")) %>%   
-mutate( Classificazione = ifelse(Progetto %in% finanziati, "Approvati-Finanziati", "Approvati-Non Finanziati" ),
-       Classificazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati", Classificazione)) %>%   
+mutate( Classificazione = ifelse(Progetto %in% finanziati, "Finanziati", "Non Finanziati" ),
+       Classificazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati", Classificazione), 
+       
+       Classificazione = factor(Classificazione, levels = c("Finanziati", "Non Finanziati","Non Approvati" ))
+       ) %>%   
 group_by(Progetto, Classificazione) %>% 
   summarise(MScore = round(mean(score, na.rm = TRUE),2), 
             Score = sum(score, na.rm = TRUE) )%>%   
@@ -34,7 +37,9 @@ group_by(Progetto, Classificazione) %>%
   coord_flip()+ facet_wrap(Classificazione ~ ., ncol = 1, scales = "free_y",strip.position = "top")+#, space = "free_y")+
   theme_bw() +
   theme(panel.grid.major.y = element_blank(), 
-        legend.position = "blank") +
+        legend.position = "blank", 
+        panel.grid.major = element_line(colour = "white"), 
+        panel.grid.minor = element_line(colour = "white")) +
   #theme_ipsum(axis_title_size = 15)+
   #theme_minimal() + 
   labs(title = "", y = "Somma punteggi", x = "Codice Progetto")+
@@ -47,7 +52,9 @@ group_by(Progetto, Classificazione) %>%
 
 rank <-  c("15",	"8",	"10",	"4",	"17",	"5",	"18",	"12",	"19",	"13",	"14",	"11",	"1","2",
            "7","6","16","9","3","23","28","25","24","21","20","22","29","26","27")
-
+finanziati <- c(15,	8,	10,	4,	17,	5,	18,	12,	19,	13,	14,	11,	1,2  )
+nonfinanziati <- c(7, 6, 16, 9, 3)
+nonaprov <- c(20, 21, 22, 23, 24, 25, 26, 27, 28, 29)
 
 abstrEst %>% 
   mutate(across(7:10, ~recode(., "1" =  "scarso", 
@@ -65,10 +72,14 @@ abstrEst %>%
                                          "eccellente"))) %>% 
   group_by(Progetto, Item, Giudizio) %>% 
   count() %>% 
-  mutate(Progetto = factor(Progetto, levels = rank)) %>%  
+  mutate(Progetto = factor(Progetto, levels = rank), 
+         Classificazione = ifelse(Progetto %in% finanziati, "Finanziato", 
+                                  ifelse(Progetto %in%  nonfinanziati, "Non Finanziato", 
+                                        "Non Approvato")), 
+         Classificazione = factor(Classificazione, levels = c("Finanziato", "Non Finanziato","Non Approvato" ))) %>% 
   ggplot(aes(Giudizio, Item, label = n)) + 
   geom_tile( fill = "white", alpha = 5)+ geom_text()+
-  facet_wrap(~Progetto)+
+  facet_wrap(Classificazione~Progetto)+
   theme_bw()+
   theme(legend.position = "blank", 
         axis.text.x = element_text(angle = 45, hjust=1))
