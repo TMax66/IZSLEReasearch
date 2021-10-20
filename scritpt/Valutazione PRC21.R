@@ -34,7 +34,33 @@ group_by(Progetto, Classificazione) %>%
   mutate(Progetto = factor(Progetto), 
          Progetto = recode(Progetto, "15" = "Filipello",
                            "8" = "Villa", 
-                           "10" = "Lorenzi")) %>% View()
+                           "10" = "Lorenzi", 
+                           "4" = "Pongolini",  
+                           "17" = "Accurso", 
+                           "5" = "Rugna", 
+                           "18" = "Biancardi", 
+                           "12" = "Pacciarini", 
+                           "19" ="Gasparini", 
+                           "13" = "Pezzoni",
+                           "14" = "Gamba", 
+                           "11" = "Boniotti",	
+                            "1" = "Andreoli",
+                            "2" = "Bertoletti",  
+                            "7"=  "Rota Nodari",
+                            "6"=  "Barbieri",
+                            "16"= "Bertasi",
+                            "9"= "Cacciamali",
+                            "3"= "Maisano",
+                            "23"= "Pongolini(2)",
+                            "28"= "Benevenia",
+                            "25"= "Calzolari",
+                            "24"= "Garbarino",
+                            "21"= "Prati",
+                            "20"= "Gibelli",
+                            "22"= "Faccini",
+                            "29"= "Dalzini",
+                            "26"= "Defilippo",
+                            "27"= "D'Incau"))%>%  
   
   ggplot(aes(x = fct_reorder(Progetto, Score), y = Score, label = Score))+
   geom_point(size = 9.5,  aes(colour = Classificazione), alpha = 0.8)+
@@ -49,7 +75,7 @@ group_by(Progetto, Classificazione) %>%
         panel.grid.minor = element_line(colour = "white")) +
   #theme_ipsum(axis_title_size = 15)+
   #theme_minimal() + 
-  labs(title = "", y = "Somma punteggi", x = "Codice Progetto")+
+  labs(title = "", y = "Punteggio", x = "Responsabile Scientifico")+
   theme(strip.placement = "outside")+ ylim (0, 90) + geom_hline(yintercept = 85, colour = "red", linetype = "dashed")+
   scale_y_continuous(breaks = c(seq(0, 80, by=20), 85))
  
@@ -83,7 +109,36 @@ abstrEst %>%
          Classificazione = ifelse(Progetto %in% finanziati, "Finanziato", 
                                   ifelse(Progetto %in%  nonfinanziati, "Non Finanziato", 
                                         "Non Approvato")), 
-         Classificazione = factor(Classificazione, levels = c("Finanziato", "Non Finanziato","Non Approvato" ))) %>% 
+         Classificazione = factor(Classificazione, levels = c("Finanziato", "Non Finanziato","Non Approvato" )), 
+         Progetto = recode(Progetto, "15" = "Filipello",
+                           "8" = "Villa", 
+                           "10" = "Lorenzi", 
+                           "4" = "Pongolini",  
+                           "17" = "Accurso", 
+                           "5" = "Rugna", 
+                           "18" = "Biancardi", 
+                           "12" = "Pacciarini", 
+                           "19" ="Gasparini", 
+                           "13" = "Pezzoni",
+                           "14" = "Gamba", 
+                           "11" = "Boniotti",	
+                           "1" = "Andreoli",
+                           "2" = "Bertoletti",  
+                           "7"=  "Rota Nodari",
+                           "6"=  "Barbieri",
+                           "16"= "Bertasi",
+                           "9"= "Cacciamali",
+                           "3"= "Maisano",
+                           "23"= "Pongolini(2)",
+                           "28"= "Benevenia",
+                           "25"= "Calzolari",
+                           "24"= "Garbarino",
+                           "21"= "Prati",
+                           "20"= "Gibelli",
+                           "22"= "Faccini",
+                           "29"= "Dalzini",
+                           "26"= "Defilippo",
+                           "27"= "D'Incau"))%>%   
   ggplot(aes(Giudizio, Item, label = n)) + 
   geom_tile( fill = "white", alpha = 5)+ geom_text()+
   facet_wrap(Classificazione~Progetto)+
