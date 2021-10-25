@@ -140,11 +140,12 @@ abstrEst %>%
                            "26"= "Defilippo",
                            "27"= "D'Incau"))%>%   
   ggplot(aes(Giudizio, Item, label = n)) + 
-  geom_tile( fill = "white", alpha = 5)+ geom_text()+
+  geom_tile( fill = "white", alpha = 5)+ geom_text(size = 6)+
   facet_wrap(Classificazione~Progetto)+
   theme_bw()+
   theme(legend.position = "blank", 
-        axis.text.x = element_text(angle = 45, hjust=1))
+        axis.text.x = element_text(angle = 45, hjust=1),
+        text = element_text(size=20))
   
 
 
