@@ -36,8 +36,7 @@ izssard <- here("data", c("izssard.bib"))
 izssard <- convert2df(izssard, dbsource = "wos", format = "bibtex")
 
 
-izsler %>% 
-  mutate(PY = ifelse(is.na(PY), parse_number(earlyaccessdate), PY)) %>% View()
+
 
 
 

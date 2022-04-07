@@ -36,7 +36,7 @@ library(ggrepel)
 # 
 # p <- get_publications(id)
 
-source( "dati.R")
+source( here("script", "dati.R"))
 
 prod %>% 
   filter(PY< 2022 & Istituto == "izsler" ) %>% 
@@ -147,22 +147,29 @@ gr <- lapply(IZS, pubrate)
 
 grizs <- do.call(rbind, gr)
 
-gr.frame <- data.frame( "Istituto" = c("izsam","izsic", "izsler", 
-                                       "izslt", "izsmezz", "izspiem",  "izspuglia", "izssard", "izsum", "izsve"), 
+gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+                                       "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
+                                       "IZSUM", "IZSVE"), 
                         grizs)
+
+ 
+
+
+ 
+
  
 p <- gr.frame %>% 
-  mutate(Istituto = fct_reorder(Istituto, grizs)) %>%
+  mutate(Istituto = fct_reorder(Istituto, grizs)) %>%  
   ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
   geom_point(size = 14, col = "lightblue")+
   geom_text()+
   coord_flip()+
   geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "darkgrey")+
   theme_ipsum(axis_title_size = 15)+
-  theme(axis.text.y = element_blank())+
+   #theme(axis.text.y = element_blank())+
   labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale nel periodo 2018-2021", 
        subtitle = "fonte dati: Web of Science", 
-       y = " Tasso annuo di crescita  percentuale", x = "")
+       y = " Tasso annuale di crescita ", x = "")
 
  
 pimage <- axis_canvas(p, axis = 'y') +
@@ -245,11 +252,9 @@ izsto <- convert2df(izsto, dbsource = "scopus", format = "bibtex")
 
 
 
-  ##################################
-
-
+##################################
 izsler %>% 
-  filter(PY>=2005 & PY<=2018) %>% 
+  filter(PY <2022) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   top_n(10, n) %>% 
@@ -258,7 +263,7 @@ izsler %>%
   ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity", fill="red")+coord_flip()
 
 izsve %>% 
-  filter(PY>2005) %>% 
+  filter(PY < 2022) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   top_n(10, n) %>% 
@@ -267,7 +272,7 @@ izsve %>%
   ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()
 
 izsam %>% 
-  filter(PY>2005) %>% 
+  filter(PY < 2022) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   top_n(10, n) %>% 
@@ -276,11 +281,8 @@ izsam %>%
   ggplot(aes(x=SO, y=n))+geom_bar(stat = "identity")+coord_flip()
 
 
-
-
-
 j<-izsler%>% 
-  filter(PY>2005) %>% 
+  filter(PY < 2022) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   arrange(n) %>% 
@@ -288,7 +290,7 @@ j<-izsler%>%
 
 
 jve<-izsve%>% 
-  filter(PY>2005) %>% 
+  filter(PY < 2022) %>% 
   group_by(SO) %>% 
   summarise(n=n()) %>% 
   arrange(n) %>% 
