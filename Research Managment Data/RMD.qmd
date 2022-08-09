@@ -5,7 +5,7 @@ format: pdf
  
 ---
 
-#
+# Pianificazione e implementazione dei servizi di gestione dei dati della ricerca (RDM)
 
 Per  **gestione dei dati della ricerca**  s'intende l'organizzazione, l'archiviazione, la conservazione e la condivisione dei dati raccolti e utilizzati in un progetto di ricerca. Implica la gestione quotidiana dei dati di ricerca durante la durata di un progetto di ricerca (ad esempio, utilizzando convenzioni di denominazione dei file coerenti). Implica anche decisioni su come i dati verranno conservati e condivisi dopo il completamento del progetto (ad esempio, il deposito dei dati in un repository per l'archiviazione e l'accesso a lungo termine).
 
@@ -24,6 +24,10 @@ Ci sono una serie di ragioni per cui la gestione dei dati di ricerca è importan
 - I dati ben gestiti e accessibili consentono ad altri di convalidare e replicare i risultati.
 
 - La gestione dei dati di ricerca facilita la condivisione dei dati di ricerca e, se condivisi, i dati possono portare a scoperte preziose da parte di altri al di fuori del team di ricerca originale.
+
+In sostanza, i dati ben gestiti portano a una ricerca di qualità superiore, a una maggiore visibilità e ai conseguenti vantaggi di tassi di citazione migliorati. La natura sempre più collaborativa della ricerca è un argomento urgente per i servizi RDM. I ricercatori devono scambiare dati su piattaforme diverse e richiedere sistemi efficaci per archiviare, accedere e condividere i dati in modo sicuro tra team di ricerca multiistituzionali. 
+I dati della ricerca sono una risorsa, che apporta benefici e un impatto per l'istituzione tanto quanto per il ricercatore. Per ottenere questi vantaggi, è necessario disporre di sistemi e servizi di supporto efficaci.
+
 
 ## Cosa sono i dati della ricerca
 
@@ -85,13 +89,25 @@ Un ruolo essenziale nell’attuazione della strategia sulla scienza aperta e del
 infrastrutture di ricerca, oggetto del “Piano nazionale per le Infrastrutture di Ricerca”6
 (parte integrante, anch’esso, del
 PNR), a cui si rimanda per tutti gli aspetti che possono avere un impatto sull’applicazione del Decreto con riferimento
-alle banche dati pubbliche, gestite a livello istituzionale o su base tematica, necessarie per l’archiviazione dei dati della
-ricerca da rendere disponibili per il riutilizzo.
+alle banche dati pubbliche, gestite a livello istituzionale o su base tematica, necessarie per l’archiviazione dei dati della ricerca da rendere disponibili per il riutilizzo.
 
 
+La gamma di competenze e conoscenze necessarie per fornire servizi RDM è dettata in gran parte dalle singole fasi del ciclo di vita del progetto di ricerca. L'esame di queste fasi fornisce alcune indicazioni sulle attività che saranno richieste da un servizio di supporto completo:
 
+•	pre-progetto: assistenza nella preparazione di **piani di gestione dei dati**
 
+•	in corso di progetto: consulenza sulla documentazione dei dati, i formati e gli standard per consentire il riutilizzo; linee guida sull'archiviazione, la gestione e l'analisi dei dati per ottenere la conformità normativa e le migliori pratiche; consulenza e/o fornitura di strutture di archiviazione dei dati di ricerca che soddisfano le esigenze di un'ampia gamma di tipi di dati, piattaforme ed esigenze di accesso;
 
+•	post -progetto: consulenza sulla selezione di dati di valore a lungo termine; supporto per rendere visibili e/o disponibili i dati della ricerca a un pubblico definito; aiuto ai ricercatori nel decidere come archiviare i dati alla fine di un progetto (o in qualsiasi altro momento opportuno).
+
+I ruoli e le responsabilità per la definizione, l'abilitazione e l'erogazione dei servizi di RDM appartengono a tre figure principali:
+
+- Responsabile della ricerca (Direzione Sanitaria);
+
+- Servizi di supporto tecnico-informatico;
+
+- Ricercatori
+ 
 
 
 
