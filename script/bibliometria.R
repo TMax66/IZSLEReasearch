@@ -17,6 +17,15 @@ library(hrbrthemes)
 library(cowplot)
 library(ggrepel)
 
+# 
+# pubblicazioni <- read_excel("C:/Users/vito.tranquillo/Desktop/Git Projects/COGEPERF/data/raw/pubblicazioni.xlsx")
+# 
+# pubblicazioni %>% 
+#   group_by(OA) %>% 
+#   distinct(NR) %>% 
+#   count()
+
+
 
 # Last.Name <- c("Tranquillo", "Merialdi", "Lavazza", "Pongolini", "Varisco")
 # First.Name <- c("Vito", "Giuseppe", "Antonio", "Stefano", "Giorgio")
@@ -37,19 +46,47 @@ library(ggrepel)
 # p <- get_publications(id)
 
 source( here("script", "dati.R"))
+library(cowplot)
 
-prod %>% 
-  filter(PY< 2022 & Istituto == "izsler" ) %>% 
-  ggplot(aes(x=PY, y=n, group=Istituto))+  
-  labs(y="n.articoli", x="anno")+
-  ylim(0, 130)+
-  geom_smooth()+ geom_line() +geom_point()+
-  theme_ipsum(axis_title_size = 15)+
-  # geom_text(aes(x= 2019, y = 120), label = "Tasso annuo di crescita  percentuale = 6.82%", size = 8)+
+p <- prod %>% 
+  filter(PY< 2022   & Istituto == "izsler" ) %>%  
+  mutate(n = c(90, 88, 123, 139)) %>% 
+  ggplot(aes(x=PY, y=n, group=Istituto, label=n))+  
+  geom_label(nudge_y = 5)+
+  ylim(85, 150)+
+  geom_smooth(size = 2.5) + geom_point(size = 3)+
+  theme_classic()+
+  theme(axis.text.y = element_blank(), 
+        axis.ticks = element_blank(), 
+        axis.line = element_blank(), 
+        axis.text.x = element_text(size=15),
+        title = element_text(size = 20), 
+        plot.caption = element_text(size = 15))+
+ 
+  geom_text(aes(x= 2020, y = 90), label = "Growh rate = +14.5%", size = 5)+
   labs(title = "Produzione scientifica dell'IZSLER", 
-       subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
-       x = " Anno di pubblicazione", y = "n. di articoli")
+      caption = "N. di pubblicazioni/anno su riviste peer-review \n indicizzate da Web of Science (fonte: base dati Biblioteca IZSLER)", 
+       x = "", y = "") 
   
+ library(png)
+
+# path <- "C:/Users/vito.tranquillo/Desktop/Git Projects/IZSLEReasearch/figure/jj"
+# 
+# img <- readPNG(path)
+# 
+# img_graph <- p +                  
+#   inset_element(p = img,
+#                 left = 0.05,
+#                 bottom = 0.65,
+#                 right = 0.5,
+#                 top = 0.95)
+# 
+# 
+
+
+
+
+
 
 
 prod %>% 
@@ -64,6 +101,11 @@ prod %>%
                           izssard = "IZS Sardegna", 
                           izsum = "IZSUM")) %>%  
   filter( PY < 2022 ) %>%  
+  mutate(n = ifelse(PY == 2019 & Istituto == "IZSLER", 88, 
+                    ifelse(PY == 2020 & Istituto == "IZSLER",123, 
+                           ifelse(PY == 2021 & Istituto == "IZSLER",135, n)))) %>% 
+  
+  
   #mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_)) %>%  View()
   
   ggplot(aes(x=PY, y=n, label = n))+  
@@ -74,7 +116,7 @@ prod %>%
   theme_ipsum(axis_title_size = 15)+
     theme(legend.position = "none")+facet_wrap(~Istituto, scales = "free")+
   labs(title = "Produzione scientifica degli IIZZSS periodo 2018-2021", 
-       subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science", 
+       subtitle = "N. di pubblicazioni su riviste peer-review indicizzate da Web of Science (fonte dati IZSLER: base dati Biblioteca)", 
        x = " Anno di pubblicazione", y = "n. di articoli")
 
 
@@ -131,7 +173,7 @@ pubrate <- function(istituto)
 }
 
 
-pubrate(istituto = izsler)
+pubrate(istituto = izsve)
 
 
 
@@ -159,6 +201,7 @@ gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER",
 
  
 p <- gr.frame %>% 
+  mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs)) %>% 
   mutate(Istituto = fct_reorder(Istituto, grizs)) %>%  
   ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
   geom_point(size = 14, col = "lightblue")+
@@ -188,11 +231,74 @@ pimage <- axis_canvas(p, axis = 'y') +
 ggdraw(insert_yaxis_grob(p, pimage, position = "left"))
   
   
+###################################################
+#############da pubblicazioni biblioteca########
+library(readxl)
+
+pubblicazioni <- read_excel(here( "data","pubblicazioni.xlsx"))
+pubblicazioni$AU <- str_to_upper(pubblicazioni$AU)
+pubblicazioni$AU <- str_remove(pubblicazioni$AU, " ")
+pubblicazioni$AU <- gsub("_", " ", pubblicazioni$AU)
+pubblicazioni$Nome <- str_extract( pubblicazioni$AU, ",.*$")
+pubblicazioni$Nome <- str_remove(pubblicazioni$Nome, ",")
+pubblicazioni$Nome <- gsub("\\s.*$", "", pubblicazioni$Nome)
+pubblicazioni$Cognome <- gsub(",.*$", "", pubblicazioni$AU)
   
+
+pub <- pubblicazioni %>% 
+  mutate(articoliif = ifelse(Congr == "IF ; Int" | Congr == "IF",  "IF", NA), 
+         INT = ifelse(Congr == "IF ; Int" | Congr == "Int",  "Int", NA ), 
+         NAZ = ifelse(Congr == "Naz", "Naz", NA), 
+         Oth = ifelse(Congr == "Others" , "Others", NA), 
+         IF = as.numeric(IF))  
+
+ 
+
+
+pub %>%
+  filter(articoliif == "IF") %>%
+  group_by(NR) %>%
+  count(NR) %>% 
+  select(NR) 
+
+
+
+
+
+
+
+
+
+pub  %>%
+  filter(articoliif == "IF") %>%
+  group_by(OA) %>% 
   
+  summarise("Pubblicazioni" = nlevels(factor(NR)), 
+            "Impact Factor" = sum(IF, na.rm = TRUE))
+
+
   
+  pubblicazioni %>% 
+    group_by(OA) %>% 
+    summarise("Pubblicazioni" = nlevels(factor(NR)))
   
-  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
