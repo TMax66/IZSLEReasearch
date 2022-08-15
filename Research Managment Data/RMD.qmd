@@ -91,6 +91,7 @@ infrastrutture di ricerca, oggetto del “Piano nazionale per le Infrastrutture 
 PNR), a cui si rimanda per tutti gli aspetti che possono avere un impatto sull’applicazione del Decreto con riferimento
 alle banche dati pubbliche, gestite a livello istituzionale o su base tematica, necessarie per l’archiviazione dei dati della ricerca da rendere disponibili per il riutilizzo.
 
+# Ruoli e responsabilità
 
 La gamma di competenze e conoscenze necessarie per fornire servizi RDM è dettata in gran parte dalle singole fasi del ciclo di vita del progetto di ricerca. L'esame di queste fasi fornisce alcune indicazioni sulle attività che saranno richieste da un servizio di supporto completo:
 
@@ -104,12 +105,13 @@ I ruoli e le responsabilità per la definizione, l'abilitazione e l'erogazione d
 
 - Responsabile della ricerca (Direzione Sanitaria);
 
-- Servizi di supporto tecnico-informatico;
+- Servizi di supporto tecnico-informatico e amministrativo;
 
 - Ricercatori
  
 
 #### Direzione Sanitaria (Responsabile della ricerca)
+
 Il ruolo principale del Responsabile della ricerca nell'introduzione dei servizi di RDM sarà quello di garantire che i servizi proposti siano desiderabili, realizzabili e sostenibili e, in tal caso, fornire un supporto chiaro, informato e inequivocabile.
 
 In particolare, le principali responsabilità a carico della Direzione sono:
@@ -126,8 +128,89 @@ In particolare, le principali responsabilità a carico della Direzione sono:
 •	ratificare una politica che articola i principi fondamentali della RDM e funge da quadro per le linee guida e la progettazione dei servizi.  
 
 
+#### Servizi di supporto tecnico-informatico e amministrativo
+
+I team di supporto che forniranno servizi RDM derivano da professionalità presenti in IZSLER nell'ambito della formazione, delle tecnologie informatiche a data analysis, e amministrazione della ricerca.  Per fornire servizi RDM, insieme forniranno lo sforzo per:
+
+•	istituire un team RDM per intraprendere le azioni definite dal gruppo direttivo;
+
+•	identificare la natura delle risorse di dati dell'ente e le pratiche di gestione dei dati;
+
+•	sviluppare e attuare proposte, piani e budget per le infrastrutture tecnologiche e umane necessarie per fornire servizi di RDM;
+
+•	riqualificare, riorganizzare e acquisire in altro modo le competenze per fornire servizi RDM efficaci;
+
+•	pianificare e intraprendere un programma di supporto per promuovere gli aspetti chiave di un'efficace gestione dei dati di ricerca, spiegando in termini universalmente accessibili i suoi obblighi, benefici e servizi previsti;
+
+•	facilitare le opportunità di formazione per dirigenti, personale di supporto e ricercatori;
+
+#### Ricercatori
+
+In quanto creatori e utenti dei dati di ricerca, il coinvolgimento dei ricercatori è fondamentale nello sviluppo dei servizi RDM. Qualsiasi prestazione di servizi deve basarsi su una profonda comprensione della ricerca, dei suoi modelli  motivazioni e priorità. Ciò non può essere ottenuto senza un impegno da parte della comunità di ricerca a contribuire alla definizione dei requisiti di servizio. Senza il loro coinvolgimento attivo e supporto, il successo di un servizio RDM è destinato a essere limitato. Mentre la Direzione definirà le aspettative e il Personale di supporto fornirà i servizi, è responsabilità dei ricercatori:
+
+•	garantire che le loro opinioni siano rappresentate contribuendo ai gruppi direttivi/di lavoro;
+
+•	collaborare alla raccolta dei requisiti e al collaudo di soluzioni e metodi;
+
+•	articolare chiaramente - in termini di creazione, utilizzo e gestione dei dati - i particolari requisiti, opportunità e ostacoli incontrati nell'ambito delle proprie discipline;
+
+•	sostenere l'adozione di metodi e servizi approvati all'interno delle loro comunità.
 
 
+# Componenti di un servizio RDM
+Per supportare un'efficace gestione e condivisione dei dati, è necessaria una strategia e di una suite di servizi coerenti. La sezione seguente propone una serie di componenti da affrontare durante la fornitura di servizi RDM, insieme a una descrizione dei ruoli e delle responsabilità di coloro che possono fornirli e utilizzarli. 
+Il diagramma seguente tenta di visualizzare i diversi aspetti che devono essere affrontati.
+
+
+```{r echo=FALSE, fig.align = "center",out.width = '45%'  }
+knitr::include_graphics("figure/fig1.jpg")
+```
+
+
+## Politica e strategia RDM
+
+#### Sviluppare una politica
+
+Un'ampia consultazione è fondamentale quando si sviluppa una politica; lo sviluppo delle politiche è di per sé un'efficace attività di sensibilizzazione. È necessario essere consapevoli dei ruoli che svolgono le diverse parti interessate e quali sono i loro problemi e le loro esigenze per garantire che la politica sia desiderabile e realistica. Ottenere feedback e coinvolgimento durante tutto il processo di sviluppo garantirà che la politica sia adatta allo scopo. Ricorda di mantenere le cose semplici e di utilizzare un linguaggio chiaro e concetti che parlino alle persone che dovranno applicare e supportare la politica. Una volta che hai una prima bozza, rivedila con un piccolo gruppo pilota (ad es. ricercatori, dirigenti e personale dei servizi chiave) per assicurarti che sia comprensibile e copra i punti chiave. La politica dovrà quindi essere ratificata dagli organi di governo dell'Università, un processo che richiederà probabilmente diverse iterazioni e potrebbe richiedere molto tempo. Per questo motivo è utile mantenere la policy sintetica, concentrandosi su principi di alto livello. 
+
+#### Sviluppare una strategia
+
+Avere una strategia globale è essenziale per garantire che i servizi RDM si sviluppino in modo coerente. Dovrebbe delineare gli obiettivi chiave e le fasi del lavoro pianificate in un determinato periodo per realizzarli. Ci sono tre passaggi chiave per definire la tua strategia:
+
+1.	capire la tua posizione attuale;
+
+2.	definisci l'obiettivo che vuoi raggiungere;
+
+3.	tracciare un programma di attività per effettuare questa transizione.
+
+Per fare il punto sulla situazione attuale, è necessario essere consapevoli del contesto in cui si lavora. Quali fattori interni ed esterni influenzano la gestione e la condivisione dei dati di ricerca e quali hanno le maggiori implicazioni per te? Questi potrebbero includere codici di condotta per la ricerca, politiche dei finanziatori, legislazione nazionale e internazionale e accordi di collaborazione che richiedono la condivisione dei dati oltre i confini istituzionali. Dovresti anche essere a conoscenza della dichiarazione di intenti della tua istituzione in modo da poter mappare le attività e i vantaggi RDM ad essa come mezzo per incoraggiare il supporto. 
+
+
+#### Coordinamento della politica e della strategia dei dati
+
+_Per un certo numero di istituti di ricerca  la creazione di una politica di gestione dei dati di ricerca è stata scelta come **primo passo** nel processo di definizione di una strategia. Le politiche forniscono chiarezza su cosa si aspetta dall'istituzione e chi è responsabile di quali attività. La gestione dei dati della ricerca coinvolge molte parti interessate, quindi una visione coerente espressa attraverso una politica può essere un modo utile per coordinare l'ampia gamma di interessi che si trovano in un istituto di istruzione superiore e per fornire un quadro di governance globale. Una politica può anche fornire una leva per sbloccare le risorse per lo sviluppo dell'infrastruttura, rendendo l'implementazione più fattibile_. 
+_Il momento migliore per rilasciare una politica è un punto controverso. Sono stati espressi timori che l'approvazione di una politica prima dello sviluppo di infrastrutture e servizi di supporto possa portare a un eventuale divario tra l'aspirazione e la realtà dell'attuazione con risorse e realizzabile. Altri hanno ritenuto che una politica sia un utile punto di partenza, un mezzo per guadagnare terreno e presentare una visione ambiziosa che motiverà e guiderà lo sviluppo del servizio. Sii consapevole della tua cultura istituzionale per determinare l'approccio migliore_.
+_Questa interazione tra politiche e strategie è degna di nota. Nei casi in cui una politica sia stata prima sviluppata, la strategia successiva dovrà fornire una tabella di marcia più dettagliata per l'attuazione. Altre istituzioni, come l'Università di Bath, hanno prima sviluppato una strategia e successivamente hanno affrontato la politica, trattandola come una componente di supporto dello sviluppo dei servizi_.
+
+
+## Business plan e sostenibilità
+
+Lo sviluppo dei servizi RDM rappresenta un'impresa completamente nuova, che spesso richiede significativi cambiamenti organizzativi e comportamentali. Per garantire che questi cambiamenti siano sostenuti è necessaria la creazione - e l'accettazione formale - di un piano aziendale a lungo termine. Tale piano dovrebbe definire gli obiettivi, i costi previsti e le spese pianificate, l'impiego e il miglioramento delle risorse, il programma di cambiamento futuro e i benefici previsti. 
+È fondamentale che il piano aziendale dei servizi RDM rifletta la missione istituzionale espressa nel suo piano strategico, poiché ciò gli darà legittimità. La strategia e la roadmap dei servizi RDM forniranno i tuoi obiettivi di servizio, ma nel business plan dovrai assegnare costi noti o previsti, insieme a un'indicazione dell'esercizio finanziario in cui si verificherà la spesa. Il paino aziendale dovrebbe  quindi descrivere quali ritorni sull'investimento sono previsti, che per i servizi RDM possono essere espressi in termini di maggiore impatto sulla ricerca, processo di ricerca più efficace ed efficiente in termini di costi, migliori opportunità per nuove e più ricerche o maggiori finanziamenti. 
+
+## Orientamento, formazione e supporto
+E' necessario prevedere attività di formazione dei ricercatori e del personale di supporto 
+
+
+## Il Data Management Plan
+
+## Gestione dei dati attivi
+
+## Selezione e consegna dei dati
+
+## Archivi di dati
+
+## Cataloghi dei dati
 
 
 
