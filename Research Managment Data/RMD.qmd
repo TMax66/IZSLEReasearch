@@ -260,7 +260,7 @@ Non è da escludere la possibilità  sviluppare internamente sistemi completi di
 
 ## Selezione e consegna dei dati
 
-####Perché selezionare i dati per la conservazione?
+#### Perché selezionare i dati per la conservazione?
 
 I dati con un "valore riconosciuto a lungo termine" devono essere conservati, accessibili e utilizzabili per la ricerca futura. Inoltre, le attività di gestione dei dati devono essere sia efficienti che convenienti nell'uso dei fondi pubblici. Se le istituzioni vogliono garantire un uso appropriato dei fondi pubblici, un processo di selezione è essenziale per dare priorità ai dati per la curatela a lungo termine.
 
@@ -288,7 +288,7 @@ Sono necessarie linee guida chiare per impostare parametri simili a quelli conte
 E' possibile applicare diversi livelli di cura in base al valore dei dati selezionati per la conservazione. All'estremità più elementare dello spettro, si dovrebbero registrare i metadati per favorire la rilevabilità. Nei casi in cui i dati non possono essere condivisi ma devono essere conservati per un certo periodo, è possibile scegliere di eseguire l'archiviazione di base (ovvero la memorizzazione, il backup e l'esecuzione di controlli periodici di integrità). Quando i dati devono essere conservati e condivisi, possono essere applicati gradi crescenti di trattamento a seconda delle condizioni dei dati e della documentazione e del livello di riutilizzo previsto.
 Oltre alla "rilevanza per la missione", un servizio di supporto centrale può fornire consulenza su molte considerazioni chiave tra cui la probabile scala dei costi di conservazione e criteri tecnici come l'uso di formati appropriati.
  
-Supporto e orientamento dipartimentale
+
 
 La selezione consiste anche nel giudicare se i dati sono utili in termini scientifici o accademici e quali informazioni contestuali, dettagli software o hardware sono necessari per renderli tali. Le decisioni qui spetteranno ai ricercatori originali, che dovrebbero essere preparati a giustificare le loro decisioni sulla base delle migliori pratiche riconosciute nella loro disciplina.
 
@@ -391,13 +391,27 @@ L'uso di standard accettati è fondamentale. Inoltre, per migliorare la rilevabi
 Non esiste ancora un modello accettato da seguire, la ricerca sui cataloghi di dati è in una fase preliminare, pilota.
 
 
+# Ipotesti di percorso da intraprendere per l'attivazione del Sistema di Gestione dei dati della Ricerca dell'IZSLER
 
 
-# Policy dell'Istituto sulla gestione dei dati della ricerca
+1. Definizione dei una Policy dell'IZSLER sulla gestione dei dati della ricerca
+
+   - condivisione del progetto con il gruppo di supporto alla ricerca
+   - definizione di un gruppo di lavoro
+
+2. Valutazione della situazione attuale in IZSLER sulla gestione dei dati della ricerca ( survey interno)
+
+3. Definizione di una strategia di implementazione del Servizio GDR che stabilisca le risorse umane, formative e infrastrutturali necessarie allo sviluppo del Servizio GDR
+
+4. Implementazione di un servizio pilota
+
+
+
+# Policy dell'Istituto sulla gestione dei dati della ricerca  (ESEMPIO)
 
  
 ### Premessa
-Ai fini della presente policy si considera la definizione di **dati della ricerca** e di **afferenti all'IZSLER** così come da allegato 1
+ 
 L’IZSLER riconosce l’importanza fondamentale dei dati prodotti durante l’attività di ricerca come un valido risultato scientifico. 
 Pertanto riconosce la rilevanza della loro gestione per il mantenimento dei valori di qualità ed integrità della ricerca scientifica e si impegna ad applicare i più elevati standard per la loro raccolta, archiviazione e conservazione.
 L’IZSLER riconosce che dati della ricerca affidabili e facilmente reperibili sono alla base di ogni progetto di ricerca e sono altresì necessari per la verifica di attendibilità e correttezza della conduzione e dei risultati del progetto e per la sua riproducibilità
@@ -406,14 +420,33 @@ L’IZSLER riconosce che i dati della ricerca sono un valore pubblico e costitui
 
 ### Ambiti di applicazione
 La presente “policy” si applica a tutti i progetti di ricerca dell’IZSLER limitatamente alle parti di cui essa è responsabile attraverso i propri ricercatori che sono tenuti ad osservarla. Nel caso la ricerca sia stata finanziata da parti terze ed esistano accordi specifici relativi al controllo dei dati, al loro accesso e conservazione, gli accordi prevalgono sulla presente policy sempre nel rispetto della normativa vigente.
+si applica la presente policy.
+
+La presente "policy" si applica al personale della ricerca (Ds e D), dirigenti veterinari, dirigenti sanitari, dirigenti chimici, personale amministrativo di supporto alla ricerca.
+
 
 ### Trattamento dei dati della ricerca
 
-Nel rispetto della vigente normativa in materia di protezione dei dati personali e di proprietà intellettuale, nonché delle disposizioni contenute nello Statuto e nei regolamenti dell’Università e fatti salvi gli specifici accordi per il finanziamento della ricerca stipulati con terze parti,
+I dati della ricerca sono record fattuali (dati numerici, simboli, testi, immagini o suoni) utilizzati come fonti primarie della ricerca scientifica necessari per convalidare i risultati della ricerca. 
 
-i dati della ricerca, una volta pubblicati, sono archiviati e resi liberamente disponibili all’uso per finalità di ricerca scientifica o storica, o di pubblico interesse
+A supporto della definizione di dati della ricerca si allegano tre modelli considerati nella definizione corrente:
 
-I dati della ricerca, una volta pubblicati, devono essere archiviati nell’archivio digitale dell’IZSLER (AIR) o in un archivio digitale che rispetti gli standard internazionali appartenente ad istituzioni non commerciali accademiche o di ricerca, enti statali o intergovernativi
+a) LERU Roadmap for Research Data (LERU Research Data Working Group, Advice Paper No. 14 – December 2014):
+“Research data, from the point of view of the institution with a responsibility for managing the data, includes: All data which is created by researchers in the course of their work, and for which the institution has a curational responsibility for at least as long as the code and relevant archives/record keeping acts require, and third-party data which have originated within the institution or come from elsewhere.”
+
+b) The Australian Griffith University:
+“Research data are factual records, which may take the form of numbers, symbols, text, images or sounds, which are used as primary sources for research, which are commonly accepted in the research community as necessary to validate research findings.”
+
+c) The University of Minnesota:
+“Research data are data in any format or medium that relate to or support research, scholarship, or artistic activity. They can be classified as:
+ - Raw or primary data: information recorded as notes, images, video footage, paper surveys, computer files, etc.
+ - Processed data: analyses, descriptions, and conclusions prepared as reports or papers
+ - Published data: information distributed to people beyond those involved in data acquisition and administration
+
+
+Nel rispetto della vigente normativa in materia di protezione dei dati personali e di proprietà intellettuale, nonché delle disposizioni contenute nello Statuto e nei regolamenti dell’IZSLER e fatti salvi gli specifici accordi per il finanziamento della ricerca stipulati con terze parti,i dati della ricerca, una volta pubblicati, sono archiviati e resi liberamente disponibili all’uso per finalità di ricerca scientifica o storica, o di pubblico interesse.
+
+I dati della ricerca, una volta pubblicati, devono essere conservati nell’archivio digitale dell’IZSLER (AIR) o in un archivio digitale che rispetti gli standard internazionali appartenente ad istituzioni non commerciali accademiche o di ricerca, enti statali o intergovernativi
 
 I dati della ricerca collegati alle pubblicazioni alle quali si riferiscono devono essere archiviati in modo corretto, completo, affidabile, rispettandone l’integrità. Devono inoltre essere accessibili, identificabili, tracciabili, interoperabili e, laddove possibile, disponibili per usi successivi (principi FAIR).
 
@@ -432,7 +465,7 @@ E’ responsabilità dei ricercatori IZSLER la gestione dei dati della ricerca e
 
 - Raccolta, documentazione, archiviazione, accesso, uso e conservazione (o distruzione) dei dati della ricerca, compresa la definizione di protocolli e responsabilità nel gruppo di ricerca che vanno incluse in un Data Management Plan (DMP) 1 compilato, laddove previsto da contratti con finanziatori della ricerca o altre entità legali, già nella fase iniziale del progetto
 
-- Elaborazione e aggiornamento del DMP (si rinvia qui alle linee guida sui DMP e ai modelli di DMP) e definizione dei diritti di utilizzo dei dati dopo il termine del progetto;
+- Elaborazione e aggiornamento del DMP  e definizione dei diritti di utilizzo dei dati dopo il termine del progetto;
 
 - Realizzazione di copie di sicurezza (backup) secondo le linee guida e armonizzazione con i requisiti istituzionali e legali o contrattuali relativi ai dati della ricerca e alla gestione dei record che li descrivono.
 
@@ -454,52 +487,19 @@ La “policy “è stata approvata dal CdA  in data xxxx
 
 
 
-## Allegato 1
-
-### Definizione di dati della ricerca
-
-I dati della ricerca sono record fattuali (dati numerici, simboli, testi, immagini o suoni) utilizzati come fonti primarie della ricerca scientifica necessari per convalidare i risultati della ricerca. 
-
-A supporto della definizione di dati della ricerca si allegano tre modelli considerati nella definizione corrente:
-
-a) LERU Roadmap for Research Data (LERU Research Data Working Group, Advice Paper No. 14 – December 2014):
-“Research data, from the point of view of the institution with a responsibility for managing the data, includes: All data which is created by researchers in the course of their work, and for which the institution has a curational responsibility for at least as long as the code and relevant archives/record keeping acts require, and third-party data which have originated within the institution or come from elsewhere.”
-
-b) The Australian Griffith University:
-“Research data are factual records, which may take the form of numbers, symbols, text, images or sounds, which are used as primary sources for research, which are commonly accepted in the research community as necessary to validate research findings.”
-
-c) The University of Minnesota:
-“Research data are data in any format or medium that relate to or support research, scholarship, or artistic activity. They can be classified as:
- - Raw or primary data: information recorded as notes, images, video footage, paper surveys, computer files, etc.
- - Processed data: analyses, descriptions, and conclusions prepared as reports or papers
- - Published data: information distributed to people beyond those involved in data acquisition and administration
-
-### Definizione dei ricercatori e personale di supporto alla ricerca dell’IZSLER ai quali si applica la presente policy.
-Personale della ricerca (Ds e D), Dirigenti veterinari, Dirigenti Sanitari, Dirigenti chimici, personale amministrativo di supporto alla ricerca
 
 
-### Data management Plan (DMP) 
-
-Il DMP è un documento che progetta l’intero ciclo di vita dei dati della ricerca e può essere continuamente aggiornato. Il DMP assicura che i dati della ricerca siano accessibili, tracciabili, disponibili, autentici, citabili e che rispondano a requisiti legali definiti con chiarezza e a misure appropriate di sicurezza in relazione al loro riutilizzo. Nella loro forma ideale i DMP saranno in un formato machine actionable.
+ 
+ 
 
 
 
-Documenti importanti per la valutazione della policy:
-https://www.force11.org/group/fairgroup/fairprinciples Elenca i principi a cui le istituzioni devono ispirarsi
-http://learn-rdm.eu/en/research-data-management-toolkit-now-available/ raccolgie la documentazione su cui ci si è basati per la elaborazione della policy (linee guida del progetto europeo guidato da LERU)
-https://ec.europa.eu/research/openscience/pdf/eosc_declaration.pdf#view=fit&pagemode=none documento che andrà in discussione alla riunione dei rettori della LERU per essere sottoscritto (raccoglie indicazioni e suggerimenti di LEARN e di FORCE11)
+<!-- # Riferimenti -->
 
+<!-- #### Linee Guida Open Data -->
 
-
-
-
-
-## Riferimenti
-
-#### Linee Guida Open Data
-
-file:///C:/Users/vito.tranquillo/Downloads/lg-opendata-docs.pdf
-Le presenti Linee Guida, emesse ai sensi dell’art. 12 del decreto legislativo n. 36/2006 e s.m.i., dell’art. 71 del decreto
-legislativo n.82/2005 (CAD) e dell’art. 7 della Deliberazione n. 160/2018 recante “Regolamento per l’adozione
-di linee guida per l’attuazione del Codice dell’Amministrazione Digitale”, definiscono le regole tecniche relative
-all’apertura dei dati e al riutilizzo dell’informazione del settore pubblico.
+<!-- file:///C:/Users/vito.tranquillo/Downloads/lg-opendata-docs.pdf -->
+<!-- Le presenti Linee Guida, emesse ai sensi dell’art. 12 del decreto legislativo n. 36/2006 e s.m.i., dell’art. 71 del decreto -->
+<!-- legislativo n.82/2005 (CAD) e dell’art. 7 della Deliberazione n. 160/2018 recante “Regolamento per l’adozione -->
+<!-- di linee guida per l’attuazione del Codice dell’Amministrazione Digitale”, definiscono le regole tecniche relative -->
+<!-- all’apertura dei dati e al riutilizzo dell’informazione del settore pubblico. -->
