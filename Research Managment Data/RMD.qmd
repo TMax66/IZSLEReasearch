@@ -199,18 +199,197 @@ Lo sviluppo dei servizi RDM rappresenta un'impresa completamente nuova, che spes
 È fondamentale che il piano aziendale dei servizi RDM rifletta la missione istituzionale espressa nel suo piano strategico, poiché ciò gli darà legittimità. La strategia e la roadmap dei servizi RDM forniranno i tuoi obiettivi di servizio, ma nel business plan dovrai assegnare costi noti o previsti, insieme a un'indicazione dell'esercizio finanziario in cui si verificherà la spesa. Il paino aziendale dovrebbe  quindi descrivere quali ritorni sull'investimento sono previsti, che per i servizi RDM possono essere espressi in termini di maggiore impatto sulla ricerca, processo di ricerca più efficace ed efficiente in termini di costi, migliori opportunità per nuove e più ricerche o maggiori finanziamenti. 
 
 ## Orientamento, formazione e supporto
-E' necessario prevedere attività di formazione dei ricercatori e del personale di supporto 
+E' necessario prevedere attività di formazione dei ricercatori e del personale di supporto. 
+Un ampio corpus di materiali di formazione è già disponibile per il riutilizzo. 
+Data la disponibilità di materiali di formazione collaudati, lo sforzo richiesto per organizzare corsi per ricercatori è spesso concentrato sulla riproposizione dei contenuti e sull'integrazione dell'offerta. 
 
 
 ## Il Data Management Plan
 
+Molti finanziatori di progetti di ricerca richiedono l'inclusione di un piano di gestione dei dati ( Data Management Plan-DMP) come componente integrante delle domande di sovvenzione per la ricerca ( vedi come esempio il Progetto SAPASULI di Calzolari dove era rischiesto espressamente il DMP).  Sebbene ogni finanziatore possa avere un'enfasi diversa, generalmente richiedono una descrizione di base dei dati da raccogliere e una spiegazione di come verranno gestiti, condivisi e conservati, giustificando eventuali restrizioni che devono essere applicate. Il DMP è un'opportunità per dimostrare la consapevolezza delle migliori pratiche e rassicurare i finanziatori che i dati saranno gestiti in linea con le loro politiche.
+
+Al di là delle richieste di finanziatori esterni, dovrebbe essere una buona pratica da introdurre in IZSLER ( tramite la politica di gestione dei dati) che ogni ricercatore pianifichi , indipendentemente dalla tipologia del progetto e se è o meno richiesto dai finanziatori, un DPM che accompagni il progetto. 
+
+I DMP possono essere uno strumento molto utile per l'IZSLER: offrono l'opportunità di raccogliere dettagli sui volumi di dati previsti per aiutare nella pianificazione della capacità; aiutare a identificare i dataset da registrare nei cataloghi istituzionali; e consentire un coinvolgimento precoce per convalidare l'adeguatezza degli approcci proposti.
+
+Ma  non sono gli unici motivi per incoraggiare la pianificazione della gestione dei dati. Ci sono molti vantaggi che i ricercatori possono trarre da questo processo. La pianificazione consente di risparmiare tempo e fatica. Consente ai ricercatori di prendere decisioni informate, tenendo presente il contesto più ampio e le conseguenze delle diverse opzioni, al fine di anticipare ed evitare problemi. Considerando quali dati verranno creati e come, i ricercatori possono verificare di disporre del supporto necessario. Il processo DMP è in definitiva molto utile per i ricercatori in quanto semplifica il processo di ricerca.
+
+I ricercatori hanno familiarità con il processo di presentazione delle sovvenzioni, quindi molti potrebbero presumere che saranno fiduciosi nello sviluppo di DMP. Al contrario, la gestione dei dati presenta spesso una nuova serie di sfide per i ricercatori. Potrebbero non essere a conoscenza del supporto e dei servizi disponibili all'interno della loro istituzione e spesso non sono sicuri delle migliori pratiche e degli standard esistenti che possono adottare. La fornitura di orientamento, strumenti e servizi di supporto del Sistema di Gestione dei Dati della ricerca è fondamentale per aiutare i ricercatori a creare DMP solide.
+
+Ci sono molti approcci che varie istitutzioni stanno adottando per supportare la creazione di DMP, tra cui:
+•	creazione di modelli, linee guida e librerie di esempi di DMP;
+•	fornitura di strumenti come DMPonline, spesso personalizzati con indicazioni istituzionali;
+•	offrendo formazione e supporto  come servizi di consulenza.
+ 
+#### Chi è responsabile della definizione del DMP
+La pianificazione della gestione dei dati è uno sforzo collaborativo. Ovviamente deve coinvolgere i membri della comunità di ricerca, poiché un DMP stabilisce per loro il modo in cui acquisiranno o genereranno dati. Dovranno farvi riferimento durante il ciclo di vita della ricerca, quando il piano non solo fornisce un quadro guida, ma potrebbe dover essere modificato per riflettere i risultati imprevisti della ricerca. La creazione di un DMP richiederà anche il supporto professionale del personale del repository responsabile della conservazione e gestione a lungo termine dei dati, inclusa la trasmissione di set di dati a centri fuori sede. Il contributo può essere richiesto anche dai membri dell'ufficio di sostegno alla ricerca(?), che sarà responsabile delle questioni di politica, finanza e governance.
+Con una tale diversità di interessi, sarà fondamentale mantenere una comunicazione efficace. Forse sarà utile una qualche forma di responsabilità  o di coordinamento per la pianificazione della gestione dei dati, possibilmente anche la gestione centralizzata delle bozze e dei piani completati. Insieme alla formazione sull'uso degli strumenti di pianificazione, questi aspetti saranno alla base di qualsiasi servizio di successo.
+Col tempo, la pianificazione della gestione dei dati sarà un'abilità acquisita da tutti i nuovi ricercatori. Fino ad allora, questa pratica relativamente nuova richiederà supporto e consulenza.  
+
 ## Gestione dei dati attivi
+
+Durante la fase attiva della ricerca il servizio di gestione dei dati della ricerca dovrà garantire: 
+
+1.	volumi sufficienti di archiviazione dei dati di ricerca per garantire un'ampia diffusione e utilizzo. ( Sistemi Informativi);
+2.	applicazioni pertinenti che offrono la flessibilità e la funzionalità richieste dai ricercatori per archiviare, accedere e condividere i propri dati durante le collaborazioni di ricerca (Sviluppo applicativi).
+
+#### Archiviazione dei dati di ricerca
+Sarà necessario uno tudio preliminare per comprendere la quantità di dati di ricerca che vengono creati all'interno di IZSLR, dove sono conservati e come sono supportati. 
+Da indagini effettuate in diversi istituti di ricerca si evidenziano  numerosi approcci artigianali all'archiviazione dei dati di ricerca, spesso indicati in modo informale come DUD - Data center Under Desks. 
+
+Di fronte a notevoli addebiti dei servizi IT per lo storage gestito aggiuntivo, i ricercatori tendono ad  acquistare storage a basso costo. Sebbene i costi iniziali possano essere solo una frazione di quelli citati dai servizi centrali, i rischi di perdita di dati e violazioni della sicurezza sono significativamente più elevati, portando potenzialmente a costi molto maggiori a lungo termine.
+In risposta a questa sfida, molte università stanno fornendo gratuitamente capacità molto maggiori di archiviazione dei dati di ricerca. Un solido business case è fondamentale per garantire l'investimento aggiuntivo per consentire questa fornitura ma, una volta che il finanziamento è stato impegnato, è possibile perseguire una serie di opzioni di stoccaggio. Alcune università stanno utilizzando le proprie strutture HPC (High Performance Computing), mentre altre stanno estendendo la capacità dei file store esistenti o esplorando opzioni di archiviazione cloud sicure. Indipendentemente dal percorso intrapreso, il coinvolgimento con gli utenti finali ( i ricercatori) è fondamentale per garantire che l'opzione proposta soddisfi le loro esigenze.
+
+ 
+Servizi di archiviazione cloud
+I servizi cloud possono essere considerati un'opzione per ridurre l'investimento di capitale e la necessità di competenze esperte per stabilire servizi internamente. Tuttavia, i ricercatori hanno espresso preoccupazione per la potenziale perdita di controllo sui propri dati e, sebbene la sicurezza generalmente corrisponda o superi quella fornita dai sistemi interni, mantenere la sicurezza dei dati diventa più difficile quando i dati sono distribuiti a livello globale su un gran numero di dispositivi che sono condivisi da una comunità diversificata di utenti non correlati. La scelta dei servizi cloud per l'archiviazione dei dati è quindi una questione di valutazione del rapporto di rischio per i tuoi dati che può essere accettabile rispetto ai vantaggi derivanti dal contenimento dei costi e dalla facilità di accesso.
+Le decisioni sulle soluzioni di archiviazione dei dati riguarderanno non solo la selezione delle piattaforme e degli strumenti preferiti e la misura in cui verranno utilizzati i servizi di terze parti. Saranno inoltre influenzati dalla portata interna pianificata e dalla sofisticazione del servizio di gestione dei dati di ricerca istituzionale. 
+ 
+Servizi accademici 'dropbox'
+Un'area di interesse comune all'interno degli attuali progetti RDM è la fornitura di servizi simili a dropbox. I ricercatori utilizzano regolarmente Dropbox in quanto consente loro di accedere e lavorare sui propri dati da più dispositivi, sincronizzandosi automaticamente con una copia centrale. Viene eseguito il backup dei dati e i file possono essere condivisi pubblicamente o privatamente con altri utenti. Questo è spesso molto più facile per il lavoro a distanza e la collaborazione rispetto al funzionamento tramite l'archiviazione di rete gestita centralmente, in particolare quando i collaboratori hanno sede in altri istituti di istruzione superiore e organizzazioni.
+A causa della sicurezza percepita e dei potenziali rischi legali derivanti dall'utilizzo di servizi di terze parti, molte università hanno studiato le opzioni per l'esecuzione di servizi che possono essere tenuti saldamente sotto il proprio controllo. 
+In IZSLER una soluzione potrebbe essere l'adozione dei servizi GitHUB che permetto oltre la repository, alla scrittutra collaborativa, anche il controllo di versione.
+Github è un servizio open source gratuito, con la possibilità dietro pagamento ( abbonamenti annuali) di ottenere servizi dedicati e garantiti.
+
+
+Piattaforme RDM home made
+
+Non è da escludere la possibilità  sviluppare internamente sistemi completi di gestione dei dati di ricerca. Esistono alcuni esempi di piattaforme RDM sviluppati da università da utilizzare come modelli.  I requisiti comuni che sembrano emergere riguardano un file store multipiattaforma accessibile a livello globale che fornisca a tutti i collaboratori l'accesso ai dati, indipendentemente da dove si trovano. Potrebbero anche essere prese in considerazione opzioni per il backup e la sincronizzazione dei dati su dispositivi mobili. E dovrebbe sempre essere presa in considerazione la disposizione per il backup di routine, l'archiviazione a lungo termine e la condivisione dei dati. Per garantire l'adozione dei sistemi di gestione dei dati, è necessario fornire volumi di archiviazione adeguati e i sistemi devono anche essere sufficientemente flessibili, in particolare in termini di accesso, per adattarsi alla gamma delle pratiche di lavoro dei ricercatori.
+
+
 
 ## Selezione e consegna dei dati
 
+####Perché selezionare i dati per la conservazione?
+
+I dati con un "valore riconosciuto a lungo termine" devono essere conservati, accessibili e utilizzabili per la ricerca futura. Inoltre, le attività di gestione dei dati devono essere sia efficienti che convenienti nell'uso dei fondi pubblici. Se le istituzioni vogliono garantire un uso appropriato dei fondi pubblici, un processo di selezione è essenziale per dare priorità ai dati per la curatela a lungo termine.
+
+Sebbene vi sia un costo per la selezione dei dati per la conservazione, questo è minimo rispetto al costo della conservazione di tutto, soprattutto quando ciò significa renderlo accessibile online. È vero che i costi di stoccaggio sono diminuiti a un tasso del 30% annuo dagli anni '80, ma è improbabile che ciò continui secondo l'esperto di conservazione David Rosenthal.  Sebbene la domanda di storage stia aumentando vertiginosamente, i costi dello storage virtuale non stanno diminuendo alla velocità che storicamente ha avuto lo storage su disco, rendendo difficile prevedere i costi di storage a lungo termine. 
+Un processo di selezione può richiedere tempo per essere impostato e operativo, ma ciò dovrebbe ripagare in termini di capacità di prevedere i costi di conservazione e stoccaggio. La selezione contrasta anche i rischi per l'istituto. Questi includono il danno alla reputazione derivante dall'esposizione di dati sporchi, riservati o non documentati che sono stati conservati molto tempo dopo che i ricercatori che li hanno creati se ne sono andati. Un primo passo per stabilire un processo di selezione consiste nel determinare ampie categorie di dati che siano in linea con la missione dell'istituzione. 
+ 
+#### Incoraggiare i ricercatori a selezionare e depositare dati
+
+È prassi standard in alcune discipline archiviare, dove i dati sono un prodotto di ricerca riconosciuto e gli archivi di soggetti sono ben consolidati. In altri, la condivisione dei dati può essere nuova e minacciosa, e anche il termine "dati" è considerato problematico. Le politiche o le linee guida che prevedono che i ricercatori consegnino i loro dati possono sembrare minacciose, soprattutto se il processo implica prendere decisioni su ciò che vale la pena conservare. **Ciò rende la definizione di linee guida, processi e buone pratiche per la selezione dei dati e il deposito uno degli aspetti più impegnativi di un servizio RDM**.  
+
+Ottenere il consenso dei ricercatori è essenziale. È probabile che ciò richieda una combinazione di:
+•	guida di alto livello dai servizi centrali;
+•	patrocinio e orientamento a livello di dipartimento o gruppo di ricerca;
+•	strumenti di deposito per rendere il più semplice possibile la consegna dei dati da parte dei ricercatori;
+•	accordi di deposito che stabiliscono cosa accadrà con i dati e creeranno fiducia tra i ricercatori e l'istituzione.
+ 
+**Guida di alto livello**
+
+Sono necessarie linee guida chiare per impostare parametri simili a quelli contenuti in un Data Center o in una Policy sulle raccolte di archivi. Le linee guida dovrebbero essere chiare su quali dati rientrano nelle competenze del servizio istituzionale, quali tipi di dati saranno accettati e quali sono le aree prioritarie. Considerare anche quale gamma di risultati è prevista poiché possono essere applicati diversi livelli di servizio in base al potenziale valore di riutilizzo dei dati. Alcuni esempi di queste opzioni includono quanto segue:
+•	fornire raccomandazioni ai ricercatori sulle opzioni di archiviazione o smaltimento locali;
+•	catalogare i dati e fornire un livello di distruzione garantito, ad esempio per i dati riservati;
+•	catalogare i dati e depositarli per la conservazione in un archivio di soggetti riconosciuto o in un archivio di dati interistituzionale;
+•	catalogare e conservare i dati nel repository istituzionale dei dati per la condivisione a condizioni concordate.
+
+E' possibile applicare diversi livelli di cura in base al valore dei dati selezionati per la conservazione. All'estremità più elementare dello spettro, si dovrebbero registrare i metadati per favorire la rilevabilità. Nei casi in cui i dati non possono essere condivisi ma devono essere conservati per un certo periodo, è possibile scegliere di eseguire l'archiviazione di base (ovvero la memorizzazione, il backup e l'esecuzione di controlli periodici di integrità). Quando i dati devono essere conservati e condivisi, possono essere applicati gradi crescenti di trattamento a seconda delle condizioni dei dati e della documentazione e del livello di riutilizzo previsto.
+Oltre alla "rilevanza per la missione", un servizio di supporto centrale può fornire consulenza su molte considerazioni chiave tra cui la probabile scala dei costi di conservazione e criteri tecnici come l'uso di formati appropriati.
+ 
+Supporto e orientamento dipartimentale
+
+La selezione consiste anche nel giudicare se i dati sono utili in termini scientifici o accademici e quali informazioni contestuali, dettagli software o hardware sono necessari per renderli tali. Le decisioni qui spetteranno ai ricercatori originali, che dovrebbero essere preparati a giustificare le loro decisioni sulla base delle migliori pratiche riconosciute nella loro disciplina.
+
+La guida del dipartimento o del gruppo di ricerca dovrebbe considerare ciò che è significativo preservare e fornire esempi di potenziali usi dei dati grezzi, dei dati elaborati nelle fasi intermedie di analisi o condizionamento o dei risultati finali. A seconda della disciplina, la riproduzione dei risultati dello studio può richiedere tutte o alcune di queste categorie. In alcune discipline sarà più importante scrutare e apprezzare i processi seguiti che riprodurne i risultati. Altri casi di riutilizzo potrebbero includere la produzione di materiale didattico.
+
+Un servizio di supporto centrale può fornire input e consigli, ad esempio su:
+•	possibilità di riutilizzo dei dati in altre discipline;
+•	criteri generici che possono aiutare a stabilire la priorità degli sforzi per riportare i dati in uno stato riutilizzabile;
+•	indicazioni pertinenti provenienti da data center, società scientifiche ed editori;
+•	come i dati possono essere utilizzati nell'e-learning e nella divulgazione.
+
+Descriviamo criteri scientifici e tecnici generici in " Definizione dei criteri per le decisioni di selezione " di seguito.
+È probabile che i ricercatori prendano decisioni su cosa condividere quando hanno raggiunto la fase di pianificazione dei risultati finali, sia che ciò significhi scrivere per la pubblicazione o preparare una versione del software o una mostra. Ha senso utilizzare tali "momenti organizzativi" verso la fine dei progetti per fornire informazioni sui benefici a breve e lungo termine e sui servizi disponibili per aiutarli a realizzarli.
+ 
+**Strumenti di deposito**
+Sarà necessario sviluppare strumenti per il deposito dei dati faciltando la definizione dei metadati che descrivono i dati da conservare.Esistono esempi di protocolli/progetti di sviluppo di tali sistemi: Jisc, DataFlow, DataUp, SWORD-ARM, che possono essere utilizzati come modelli.
+
+ 
+**Accordi di deposito**
+I ricercatori devono sentirsi in controllo quando consegnano i frutti del loro lavoro e dovrebbero essere in grado di fare affidamento sul recupero di ciò che hanno messo. Possono anche ragionevolmente aspettarsi di beneficiare di una qualche forma di valore aggiunto. Un contratto di deposito stabilirà termini e condizioni che comunicheranno le responsabilità del depositante e del fornitore di servizi. L'accordo dovrebbe concedere al repository i diritti di manipolare i dati, poiché la conservazione potrebbe richiedere la migrazione a nuovi formati. Dovrebbe inoltre consentire al repository di riservarsi il diritto di ritirare i dati per motivi legali o di altro tipo. Per un esempio di contratto di deposito si veda quello dell'Università di Edimburgo. 
+ 
+**Determinazione dei criteri per le decisioni di selezione**
+
+È necessario stabilire criteri per guidare le decisioni di selezione. Di seuito un esempio di criteri adottati in istituti di ricerca inglesi: 
+
+1.	Rilevanza per la missione : il contenuto della risorsa si adatta a qualsiasi priorità indicata nella missione dell'istituzione o nella politica dell'organismo di finanziamento, compreso qualsiasi obbligo legale di conservare i dati oltre il loro utilizzo immediato.
+
+2.	Valore scientifico o storico : i dati sono scientificamente, socialmente o culturalmente significativi? Valutare questo implica dedurre l'uso futuro previsto, dall'evidenza della ricerca attuale e dal valore educativo.
+
+3.	Unicità : la misura in cui la risorsa è l'unica o la più completa fonte di informazioni che ne possono derivare, e se è a rischio di perdita se non accettata, o può essere conservata altrove.
+
+4.	Potenziale di ridistribuzione : è possibile determinare l'affidabilità, l'integrità e l'usabilità dei file di dati; questi sono ricevuti in formati che soddisfano i criteri tecnici designati; e vengono affrontate questioni relative alla proprietà intellettuale o ai soggetti umani.
+
+5.	Non replicabilità : non sarebbe fattibile replicare i dati/risorse o non sarebbe economicamente sostenibile.
+
+6.	Caso economico : i costi possono essere stimati per la gestione e la conservazione della risorsa e sono giustificabili se valutati rispetto all'evidenza di potenziali benefici futuri; il finanziamento è stato assicurato ove appropriato.
+
+7.	Documentazione completa : le informazioni necessarie per facilitare la scoperta, l'accesso e il riutilizzo futuri sono complete e corrette; compresi i metadati sulla provenienza della risorsa e il contesto della sua creazione e utilizzo.
+
+Linee guida istituzionali basate su questi criteri, coordinate con eventuali linee guida locali che le adattano a specifici contesti disciplinari, aiuteranno a concentrare le risorse sui dati che hanno un reale potenziale di impatto e riutilizzo. Servizi come la gestione degli accessi, l'archiviazione e la conservazione devono avere la priorità in base al valore e alla domanda degli utenti, un principio familiare a qualsiasi utente della biblioteca che ha preso in prestito da una breve collezione in prestito o ha cercato un oggetto raro da un archivio. Un approccio simile deve essere adottato per i dati; gran parte di ciò che viene trattenuto non deve necessariamente essere online o addirittura in loco e il livello di assistenza aggiuntiva richiesta varierà.
+
+
 ## Archivi di dati
 
+Una volta stabiliti quali dati conservare, una domanda ovvia da affrontare è come verranno conservati e condivisi. Ci sono argomenti per adottare un approccio fai-da-te e anche per utilizzare servizi esterni, ma è molto probabile si adottino una combinazione di questi.
+Probabilmente la prima considerazione sarà il costo, compreso il prezzo da pagare per il mantenimento di un archivio di dati e la fornitura di personale esperto per gestirlo. È generalmente accettato che i costi siano pesantemente ponderati intorno al momento in cui i dati vengono depositati per la prima volta (o ingeriti, dal punto di vista del repository) poiché è lì che si svolge la maggior parte dell'attività del personale. Tuttavia, sorgeranno ulteriori costi a seconda di quanta attività di conservazione sarà richiesta a lungo termine e della durata di tale periodo.
+Il periodo di conservazione e i costi di conservazione richiedono la considerazione di fattori familiari al gestore dei documenti. Ci sono una serie di requisiti legali e aziendali che riguardano particolari tipi di dati, oltre a mandati emergenti imposti dai principali finanziatori, alcuni dei quali determinano per quanto tempo i dati di ricerca dovrebbero rimanere rilevabili e accessibili. Le aspettative vanno da tre anni a "in perpetuo", con la maggior parte dei finanziatori che si aspetta che i dati vengano conservati per dieci anni o più.
+Anche la disponibilità di servizi esistenti come archivi specifici per argomento e centri dati designati forniti dai finanziatori della ricerca dovrebbe essere presa in considerazione. Probabilmente è meglio che i dati della ricerca risiedano con altri dati di quella disciplina, quindi puoi scegliere di raccomandare ai ricercatori di utilizzare i servizi esistenti dove sono in atto. Tuttavia, è probabile che la maggior parte dei dati di ricerca prodotti in IZSLER non sarà servita da un servizio dati esistente, quindi è probabilmente necessario un approccio ibrido.
+Trovare una soluzione richiede la considerazione di tre opzioni di base:
+
+•	sviluppo e mantenimento di un archivio istituzionale di dati;
+
+•	collegamento con archivi di dati di ricerca esterni;
+
+•	segnaletica dei servizi rilevanti per i ricercatori.
+ 
+**Archivi di dati istituzionali**
+
+Se non si dispone già di un repository istituzionale di dati, inevitabilmente ci sarà un costo di capitale significativo per la creazione di una struttura sicura. Un costo di ricavo meno ovvio ma più persistente deriverà dall'infrastruttura umana necessaria e qualsiasi istituzione che decida di archiviare e curare i propri dati dovrà prima capire chi fornirà il servizio di repository, quali competenze essenziali sono attualmente disponibili e quale personale esistente può essere riqualificato in un ruolo di gestione dei dati, nonché quali nuovi posti devono essere creati, finanziati e reclutato personale. Spesso il repository viene offerto come un nuovo servizio bibliotecario e sarà facile identificare le fonti di competenza tra il personale esistente. 
+ 
+**Archivi esterni di dati di ricerca**
+
+Esistono centinaia di archivi di dati esistenti in tutto il mondo, alcuni dei quali potrebbero già essere utilizzati dai ricercatori di IZSLER. Molti di questi sono specifici della disciplina o basati sulla comunità, alcuni sono legati agli editori, altri sono nati da piccole start-up, ad esempio figshare, mentre altri ancora sono grandi iniziative internazionali come il World Data Center. Un utile elenco di archivi di dati di ricerca da tutto il mondo è disponibile tramite Databib. Questo mostra quali aree tematiche sono supportate da ciascun repository e delinea eventuali restrizioni sull'accesso ai dati, i contratti di licenza e gli identificatori utilizzati.
+Il vantaggio immediato dell'utilizzo di un repository di dati consolidato è l'accesso che fornisce a un'infrastruttura già pronta ed esperta, non solo per l'archiviazione dei dati, ma anche per consentirne la scoperta e la consegna. Sebbene i data center aiutino "a stabilire standard per la creazione di dati e metadati, non possono fornire al singolo supporto personalizzato di cui i singoli ricercatori hanno bisogno mentre lavorano ai loro progetti individuali".
+
+ 
+**Segnalazione dei servizi rilevanti per i ricercatori**
+
+È probabile che ricercatori e gestori di dati siano ben informati sugli archivi di argomenti disponibili nella loro disciplina. Se non ce ne sono, è possibile che il servizio RDM fornisca consulenza su quelli che sono in campi strettamente correlati e possa accettare depositi. Il servizio dovrebbe almeno indirizzare i ricercatori a elenchi di archivi adeguati.  La scelta di qualsiasi archivio esterno dovrebbe tenere conto della necessità di garantire che i dati depositati all'estero si trovino in una giurisdizione che offra una protezione legale equivalente a quella che riceverebbero in Italia. Il repository dovrebbe anche essere coperto per la possibilità che cessi di funzionare, provvedendo a consegnare i dati a un luogo che possa sostenere una protezione simile. 
+Quando stai sviluppando la tua strategia, considera fino a che punto puoi spingerti nel tentativo di finanziare e coordinare l'uso dei servizi esterni da parte dei ricercatori e se soddisfano i criteri istituzionali per la conservazione e la condivisione dei dati. Ad esempio, i dati depositati in tale archivio dovrebbero essere tracciati dal catalogo istituzionale dei dati? In che modo i ricercatori informeranno l'istituto di tali depositi e un set di dati di base verrà mantenuto in loco? È necessario stabilire procedure chiare.
+
+
 ## Cataloghi dei dati
+
+IZSLER dovrebbe avere una registrazione dei dati di ricerca in  possesso e rendere questi metadati disponibili online per supportare la rilevabilità e il riutilizzo dei dati. 
+I principi comuni sulla politica dei dati affermano che:
+
+Per consentire ai dati di ricerca di essere individuabili e riutilizzati efficacemente da altri, è necessario registrare e rendere apertamente disponibili metadati sufficienti per consentire ad altri ricercatori di comprendere il potenziale di ricerca e riutilizzo dei dati. I risultati pubblicati dovrebbero sempre includere informazioni su come accedere ai dati di supporto. 
+Ne deriva una  serie di questioni da considerare:
+
+•	quali metadati sono necessari per registrare adeguatamente i set di dati?
+
+•	qualcuno di questi metadati esiste già e, in caso affermativo, dove si trova?
+
+•	come devono essere acquisiti i metadati?
+
+•	come verranno esposti i metadati e, se possibile, raccolti a livello nazionale?
+
+È utile consultare la guida di DataCite, un'organizzazione che mira a stabilire un accesso più facile ai dati di ricerca e un'identificazione persistente tramite DOI. Offre uno schema di metadati   che elenca le proprietà dei metadati principali scelte per l'identificazione accurata e coerente dei dati a scopo di citazione e recupero, insieme alle istruzioni per l'uso consigliate. Lavorando con i data center, DataCite assegna identificatori persistenti ai set di dati e sta sviluppando un'infrastruttura per supportare metodi semplici ed efficaci di citazione, scoperta e accesso ai dati. 
+Si può prevedere un approccio ai metadati a tre livelli, comprendente:
+
+1.	metadati minimi obbligatori: un insieme di 12 campi estesi dai metadati di DataCite;
+
+2.	informazioni amministrative obbligatorie – es. dettagli del finanziatore e numero di sovvenzione;
+
+3.	metadati facoltativi specifici della disciplina per consentire il riutilizzo.
+
+L'uso di standard accettati è fondamentale. Inoltre, per migliorare la rilevabilità, ha senso conformarsi alle iniziative globali di raccolta di metadati come quella fornita da OpenAIRE. 
+
+Non esiste ancora un modello accettato da seguire, la ricerca sui cataloghi di dati è in una fase preliminare, pilota.
+
 
 
 
@@ -218,7 +397,7 @@ E' necessario prevedere attività di formazione dei ricercatori e del personale 
 
  
 ### Premessa
-Ai fini della presente policy si considera la definizione di “dati della ricerca” e di “afferenti all'IZSLER” così come da allegato 1
+Ai fini della presente policy si considera la definizione di **dati della ricerca** e di **afferenti all'IZSLER** così come da allegato 1
 L’IZSLER riconosce l’importanza fondamentale dei dati prodotti durante l’attività di ricerca come un valido risultato scientifico. 
 Pertanto riconosce la rilevanza della loro gestione per il mantenimento dei valori di qualità ed integrità della ricerca scientifica e si impegna ad applicare i più elevati standard per la loro raccolta, archiviazione e conservazione.
 L’IZSLER riconosce che dati della ricerca affidabili e facilmente reperibili sono alla base di ogni progetto di ricerca e sono altresì necessari per la verifica di attendibilità e correttezza della conduzione e dei risultati del progetto e per la sua riproducibilità
