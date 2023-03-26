@@ -14,7 +14,7 @@ options(scipen = 999)
 con <- DBI::dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "dbprod03.izsler.it",
                       Database = "ProgettiAccordi")
 
-source(here("sql.R"))
+source(here("prj_sql",  "sql.R"))
 
 queryStato <- "SELECT *
                FROM Stato"
@@ -70,14 +70,16 @@ prjx %>%
              Tipologia.y == "Corrente") %>% 
       group_by(anno_inizio) %>% 
       count(), by = "anno_inizio") %>% 
-  mutate(budget_medio = round(totBudgetAnno/n, 2)) %>%  
+  mutate(budget_medio = round(totBudgetAnno/n, 2)) %>%   
         # n = paste0(n, "/", totBudgetAnno))%>%  
-  select(-totBudgetAnno) %>% 
-  pivot_longer(cols = 2:3, names_to = "param", values_to = "values") %>%  
-  mutate(param = factor(param, levels= c("n", "budget_medio")), 
+  #select(-totBudgetAnno) %>% 
+  pivot_longer(cols = 2:4, names_to = "param", values_to = "values") %>%  
+  mutate(param = factor(param, levels= c("totBudgetAnno","n","budget_medio")), 
          param = recode(param, 
+                        "totBudgetAnno" = "budget totale",
                         "n" = "n. nuovi progetti", 
-                        "budget_medio" = "budget medio per progetto")) %>% 
+                        "budget_medio" = "budget medio per progetto"
+                        )) %>% 
   
   ggplot()+
 
