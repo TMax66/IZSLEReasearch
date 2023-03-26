@@ -12,15 +12,23 @@ finanziati <- c(15,	8,	10,	4,	17,	5,	18,	12,	19,	13,	14,	11,	1,2  )
 deletedpr <- c(3,5, 6, 7, 9, 11, 13, 19, 26,29)
 
 
- 
-
 
 abstrEst %>% 
   pivot_longer(cols = 7:10, names_to = "area", values_to = "score")  %>% 
+  # select(Progetto, area, score) %>% 
+  # saveRDS(here("data","prc21.rds"))
   
   bind_rows(
     abstrInt %>% 
       pivot_longer(cols = 7:11, names_to = "area", values_to = "score")) %>%   
+
+
+
+
+
+
+
+
 mutate( Classificazione = ifelse(Progetto %in% finanziati, "Finanziati", "Non Finanziati" ),
        Classificazione = ifelse(`Vecchia numerazione` %in% deletedpr, "Non Approvati", Classificazione), 
        
@@ -60,7 +68,7 @@ group_by(Progetto, Classificazione) %>%
                             "22"= "Faccini",
                             "29"= "Dalzini",
                             "26"= "Defilippo",
-                            "27"= "D'Incau"))%>%  
+                            "27"= "D'Incau"))%>% View() 
   
   ggplot(aes(x = fct_reorder(Progetto, Score), y = Score, label = Score))+
   geom_point(size = 9.5,  aes(colour = Classificazione), alpha = 0.8)+

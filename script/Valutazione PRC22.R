@@ -4,12 +4,16 @@ library(ggrepel)
 library(readxl)
 library(hrbrthemes)
 prc22 <- read_excel(here("data", "PRJC22.xlsx"))
+
+prc22 <- prc22 %>% 
+  mutate(minsal = ifelse(Progetto %in% c(22,14,9,8,24,2,1,13,10,25,15,4, 19,5,16,6,18,17), "Approvato", "Non Approvato"))
+ 
 #score punteggi----
 prc22 %>% 
   pivot_longer(cols = 7:10, names_to = "area", values_to = "score")  %>% 
-  group_by(Progetto,  respscient) %>% 
+  group_by(Progetto,  respscient, minsal) %>% 
   summarise(MScore = round(mean(score, na.rm = TRUE),2), 
-            Score = sum(score, na.rm = TRUE) )%>%
+            Score = sum(score, na.rm = TRUE) )%>% 
   mutate(Progetto = factor(Progetto)) %>%  
   ggplot(aes(x = fct_reorder(Progetto, Score), y = Score, label = Score))+
   geom_point(size = 9.5,alpha = 0.8, color = "steelblue")+
@@ -26,7 +30,11 @@ prc22 %>%
   #theme_minimal() + 
   labs(title = "", y = "Punteggio", x = "Progetto")+
   theme(strip.placement = "outside")+ ylim (0, 90) + geom_hline(yintercept = 60, colour = "red", linetype = "dashed")+
-  scale_y_continuous(breaks = c(seq(0, 60, by=20), 65))
+  scale_y_continuous(breaks = c(seq(0, 60, by=20), 65)) +
+  facet_wrap(~minsal, scales = "free")
+
+
+
 
 
 
