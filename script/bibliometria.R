@@ -49,17 +49,18 @@ library(stringi)
 source( here("script", "dati.R"))
 library(cowplot)
 
-p <- prod %>% 
-  filter(PY< 2023 & PY > 2018   & Istituto == "izsler" ) %>%  
+prod %>% 
+  filter(PY< 2023 & PY > 2018   & Istituto == "izsler" ) %>%   
  mutate(
   #n = c(86, 89, 88, 90, 88, 123, 141, 132), 
-   PY = factor(PY, levels = c("2019", "2020", "2021","2022"))) %>% View()
-       #  PY = factor(PY, levels = c("2015","2016", "2017", "2018", "2019", "2020", "2021","2022") )) %>%  
+   PY = factor(PY, levels = c("2019", "2020", "2021","2022"))) %>%   
   ggplot(aes(x=PY, y=n, group=Istituto, label=n))+  
   geom_label(nudge_y = 5)+
   ylim(50, 150)+
   labs(y = "", x = "")+
-  geom_smooth(size = 2.5, se = FALSE) + geom_point(size = 3)+
+  geom_point(size = 3)+
+  geom_line()+
+  #geom_smooth(linewidth = 2.5, se = FALSE) + geom_point(size = 3)+
   theme_classic()+
   theme(axis.text.y = element_blank(), 
         axis.ticks = element_blank(), 
@@ -92,7 +93,7 @@ p <- prod %>%
     
   }
   
-  M <- biblioAnalysis(izsler, sep = ";" )
+  M <- biblioAnalysis(izsve, sep = ";" )
   
   
   
@@ -759,24 +760,22 @@ bind_rows(
 
 
 
-# prod %>% 
-#   mutate(Istituto= recode(Istituto, izsler = "IZSLER", 
-#                           izsam = "IZSAM", 
-#                           izsve = "IZSVE", 
-#                           izsic = "IZS Sicilia", 
-#                           izslt = "IZSLT", 
-#                           izsmezz = "IZS Mezzogiorno", 
-#                           izspiem = "IZSTO", 
-#                           izspuglia = "IZS Puglia Basilicata", 
-#                           izssard = "IZS Sardegna", 
-#                           izsum = "IZSUM")) %>%  
-#   filter( PY < 2023 & PY >2018 ) %>%  
-  # mutate(n = ifelse(PY == 2019 & Istituto == "IZSLER", 88, 
-  #                   ifelse(PY == 2020 & Istituto == "IZSLER",123, 
-  #                          ifelse(PY == 2021 & Istituto == "IZSLER",135, n)))) %>% 
-  
-  
-  #mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_)) %>%  View()
+prod %>%
+  mutate(Istituto= recode(Istituto, izsler = "IZSLER",
+                          izsam = "IZSAM",
+                          izsve = "IZSVE",
+                          izsic = "IZS Sicilia",
+                          izslt = "IZSLT",
+                          izsmezz = "IZS Mezzogiorno",
+                          izspiem = "IZSTO",
+                          izspuglia = "IZS Puglia Basilicata",
+                          izssard = "IZS Sardegna",
+                          izsum = "IZSUM")) %>%
+  filter( PY < 2023 & PY >2018 ) %>%  
+mutate(n = ifelse(PY == 2019 & Istituto == "IZSLER", 88,
+                  ifelse(PY == 2020 & Istituto == "IZSLER",123,
+                         ifelse(PY == 2021 & Istituto == "IZSLER",135, n)))) %>% 
+mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_))  
   
  
   
@@ -871,38 +870,39 @@ bind_rows(
 # 
 # 
 #   
-# IZS <-list(izsam,izsic, izsler, izslt, izsmezz, izspiem,  izspuglia, izssard, izsum, izsve)
+ IZS <-list(izsam,izsicilia, izsler, izslt, izsmezz, izsplv,  izspubas, izssardegna, izsum, izsve)
 # 
 # 
 # 
-# gr <- lapply(IZS, pubrate)
+gr <- lapply(IZS, pubrate)
 # 
-# grizs <- do.call(rbind, gr)
+ grizs <- do.call(rbind, gr)
 # 
-# gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
-#                                        "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
-#                                        "IZSUM", "IZSVE"), 
-#                         grizs)
-# 
-#  
-# 
+ gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+                                        "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
+                                        "IZSUM", "IZSVE"), 
+                         grizs) %>% 
+   mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs))
 # 
 #  
 # 
+# 
 #  
-# p <- gr.frame %>% 
-#   mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs)) %>% 
-#   mutate(Istituto = fct_reorder(Istituto, grizs)) %>%  
-#   ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
-#   geom_point(size = 14, col = "lightblue")+
-#   geom_text()+
-#   coord_flip()+
-#   geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "darkgrey")+
-#   theme_ipsum(axis_title_size = 15)+
-#    #theme(axis.text.y = element_blank())+
-#   labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale nel periodo 2018-2021", 
-#        subtitle = "fonte dati: Web of Science", 
-#        y = " Tasso annuale di crescita ", x = "")
+# 
+#  
+p <- gr.frame %>%
+  mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs)) %>%
+  mutate(Istituto = fct_reorder(Istituto, grizs)) %>%
+  ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
+  geom_point(size = 14, col = "lightblue")+
+  geom_text()+
+  coord_flip()+
+  geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "darkgrey")+
+  theme_ipsum(axis_title_size = 15)+
+   #theme(axis.text.y = element_blank())+
+  labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale nel periodo 2018-2021",
+       subtitle = "fonte dati: Web of Science",
+       y = " Tasso annuale di crescita ", x = "")
 # 
 #  
 # pimage <- axis_canvas(p, axis = 'y') +

@@ -2,22 +2,22 @@ library(tidyverse)
 library(bibliometrix)
 library(here)
 
-izsler <- here("data", c("izsler1.bib", "izsler2.bib"))
+izsler <- here("data", c("izsler.bib"))
 izsler <- convert2df(izsler, dbsource = "wos", format = "bibtex")
 
 izsve <- here("data", c("izsve1.bib", "izsve2.bib"))
 izsve <- convert2df(izsve, dbsource = "wos", format = "bibtex")
 
-izsam <- here("data", c("izsam.bib", "izsam2.bib"))
+izsam <- here("data", c("izsete.bib"))
 izsam <- convert2df(izsam, dbsource = "wos", format = "bibtex")
 
-izsplv <- here("data", c("izsplv.bib", "izsplv2.bib"))
+izsplv <- here("data", c("izsplv.bib"))
 izsplv <- convert2df(izsplv, dbsource = "wos", format = "bibtex")
 
 izsum <- here("data", c("izsum.bib"))
 izsum <- convert2df(izsum, dbsource = "wos", format = "bibtex")
 
-izsicilia <- here("data", c("izssicilia.bib"))
+izsicilia <- here("data", c("izsicilia.bib"))
 izsicilia <- convert2df(izsicilia, dbsource = "wos", format = "bibtex")
 
 izslt <- here("data", c("izslt.bib"))
@@ -29,7 +29,7 @@ izsmezz <- convert2df(izsmezz, dbsource = "wos", format = "bibtex")
 izspubas <- here("data", c("izspubas.bib"))
 izspubas <- convert2df(izspubas, dbsource = "wos", format = "bibtex")
 
-izssardegna <- here("data", c("izssardegna.bib"))
+izssardegna <- here("data", c("izssard.bib"))
 izssardegna <- convert2df(izssardegna, dbsource = "wos", format = "bibtex")
 
 
@@ -44,18 +44,18 @@ A <- izsler %>%
   summarise(n=n())
 A$Istituto<-rep("izsler", dim(A)[1])
 
-A <- A %>% 
-  mutate(n = c(86, 89, 88, 90, 88, 123, 141, 132,3))
+A <- A %>%
+  mutate(n = c(88, 123, 141, 132,66))
 
 
 B <- izsve %>%
-  mutate(PY = ifelse(is.na(PY), parse_number(earlyaccessdate), PY)) %>% 
+  mutate(PY = ifelse(is.na(PY), parse_number(earlyaccessdate), PY)) %>%  
   group_by(PY) %>%
-  summarise(n=n())
+  summarise(n=n())    
 B$Istituto<-rep("izsve", dim(B)[1])
 
 C <- izsam %>%
-  mutate(PY = ifelse(is.na(PY), parse_number(earlyaccessdate), PY)) %>% 
+  mutate(PY = ifelse(is.na(PY), parse_number(earlyaccessdate), PY)) %>%  
   group_by(PY) %>%
   summarise(n=n())
 C$Istituto<-rep("izsam", dim(C)[1])
@@ -108,3 +108,15 @@ L$Istituto<-rep("izsum", dim(L)[1])
 
 prod<-rbind(A,B,C,D, E, F, G, H, I, L)
 prod
+
+
+A %>% 
+bind_rows(B) %>% 
+  bind_rows(C) %>% 
+  bind_rows(D) %>% 
+  bind_rows(E) %>% 
+  bind_rows(F) %>% 
+  bind_rows(G) %>% 
+  bind_rows(H) %>% 
+  bind_rows(I) %>% 
+  bind_rows(L) -> prod
