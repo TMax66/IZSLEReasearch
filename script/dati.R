@@ -44,8 +44,8 @@ A <- izsler %>%
   summarise(n=n())
 A$Istituto<-rep("izsler", dim(A)[1])
 
-A <- A %>%
-  mutate(n = c(88, 123, 141, 132,66))
+# A <- A %>%
+#   mutate(n = c(88, 125, 141, 136,98))
 
 
 B <- izsve %>%

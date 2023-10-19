@@ -42,7 +42,7 @@ library(stringi)
 #                                   first_name = df$First.Name[i])
 # }
 # 
-# id <- "tthQ_DQAAAAJ&hl"http://127.0.0.1:43025/graphics/plot_zoom_png?width=1509&height=570
+# id <- "tthQ_DQAAAAJ&hl"
 # 
 # p <- get_publications(id)
 
@@ -50,35 +50,47 @@ source( here("script", "dati.R"))
 library(cowplot)
 
 prod %>% 
-  filter(PY< 2023 & PY > 2018   & Istituto == "izsler" ) %>%   
- mutate(
-  #n = c(86, 89, 88, 90, 88, 123, 141, 132), 
-   PY = factor(PY, levels = c("2019", "2020", "2021","2022"))) %>%   
-  ggplot(aes(x=PY, y=n, group=Istituto, label=n))+  
-  geom_label(nudge_y = 5)+
+  filter(PY< 2023 & PY > 2018   & Istituto == "izsler" ) %>%  
+  rename(fonte = Istituto) %>%  
+  mutate(PY = factor(PY, levels = c("2019", "2020", "2021","2022")), 
+         fonte = recode(fonte, 
+                        izsler = "WoS (grow rate = + 18%)")) %>%  
+  
+  bind_rows(
+    data.frame(PY = c("2019", "2020", "2021","2022"), 
+               fonte = rep("izsler (grow rate =  +16%)", 4), 
+               n = c( 88, 125, 141, 136))
+  ) %>%   
+  mutate(mycolor = c(rep("gray", 4), rep("blue", 4))) %>% 
+
+  ggplot(aes(x=PY, y=n, group=fonte, col = fonte, label=n))+  
+    geom_text_repel()+
+    #geom_label()+ 
   ylim(50, 150)+
   labs(y = "", x = "")+
   geom_point(size = 3)+
   geom_line()+
-  #geom_smooth(linewidth = 2.5, se = FALSE) + geom_point(size = 3)+
+  
   theme_classic()+
   theme(axis.text.y = element_blank(), 
         axis.ticks = element_blank(), 
         axis.line = element_blank(), 
         axis.text.x = element_text(size=15),
         title = element_text(size = 20), 
-        plot.caption = element_text(size = 15))+
+        plot.caption = element_text(size = 14))+
   #geom_text(aes(x= 2020, y = 90), label = "Growh rate = +6.3%", size = 5)+
-  labs(title = "Produzione scientifica dell'IZSLER \n (tasso di crescita +14.5%)", 
-      caption = "N. di pubblicazioni/anno su riviste peer-review \n indicizzate da Web of Science (fonte: base dati Biblioteca IZSLER)", 
-       x = "", y = "") 
+  labs(title = "Produzione scientifica dell'IZSLER", 
+      caption = "N. di pubblicazioni/anno", 
+       x = "", y = "")
+  
+  
   
 
   
   pubrate <- function(istituto)
   {
     ist <- istituto %>% 
-      filter(  PY < 2023 & PY >2019) 
+      filter(  PY < 2023 & PY >=2019) 
     
     M <- biblioAnalysis(ist, sep = ";" )
     
@@ -93,7 +105,32 @@ prod %>%
     
   }
   
-  M <- biblioAnalysis(izsve, sep = ";" )
+  M <- biblioAnalysis(izsler, sep = ";" )
+  
+  DFizsler <- dominance(M, k = 3000) 
+  
+  
+  DFizsler %>% 
+    filter(`Tot Articles` > 5) %>% 
+    ggplot()+
+    aes(x = `Dominance Factor`) +
+    geom_histogram(bins = 13, fill = "steelblue",color = "black")+
+    labs(y = "n.autori")+
+    theme_classic()
+    
+  DFizsler %>% 
+    filter(`Tot Articles` > 5) %>% 
+    summarise(media = median(`Dominance Factor`))
+  
+  IZS <-list(izsam,izsicilia, izsler, izslt, izsmezz, izsplv,  izspubas, izssardegna, izsum, izsve)
+  
+  Mres <- lapply(IZS, biblioAnalysis, sep = ";")
+  # 
+ mres <- do.call(rbind, Mres)
+  # 
+  gr.frame 
+  
+  
   
   
   
@@ -101,14 +138,161 @@ prod %>%
   
   Y$Var1 <- as.character(Y$Var1)
   
-  Y <- Y %>% filter(Var1 !=  2023) %>% 
-    mutate(Freq =  c(86, 89, 88, 90, 88, 123, 141, 132))
-  Y <- Y %>% 
-    filter(Var1 > 2018)
+  Y <- Y %>% filter(Var1 < 2023) 
+   # mutate(Freq =  c(88, 125, 141, 136))
+  # Y <- Y %>% 
+  #   filter(Var1 > 2018)
   
   ny <- max(as.numeric(levels(factor(Y[,1]))),na.rm=TRUE)-min(as.numeric(levels(factor(Y[,1]))),na.rm=TRUE)
   
   GR <- ((Y[nrow(Y),2]/Y[1,2])^(1/(ny))-1)*100
+  
+  
+  
+  
+  #produzione iizzss----
+  
+  prod %>%  
+    mutate(Istituto= recode(Istituto, izsler = "IZSLER",
+                            izsam = "IZSAM",
+                            izsve = "IZSVE",
+                            izsicilia = "IZS Sicilia",
+                            izslt = "IZSLT",
+                            izsmezz = "IZS Mezzogiorno",
+                            izsplv = "IZSTO",
+                            izspubas = "IZS Puglia Basilicata",
+                            izssard = "IZS Sardegna",
+                            izsum = "IZSUM")) %>%
+    filter( PY < 2023 ) %>% View()
+    ggplot(aes(x=PY, y=n, group=Istituto, label=n))+  
+    geom_text_repel()+
+   # ylim(50, 150)+
+    labs(y = "", x = "")+
+    geom_point(size = 3)+
+    geom_line()+
+    facet_wrap(~ Istituto)+
+    
+    theme()+
+    theme(axis.text.y = element_blank(), 
+          axis.ticks = element_blank(), 
+          axis.line = element_blank(), 
+          axis.text.x = element_text(size=10, color = "blue"),
+          title = element_text(size = 18), 
+          plot.caption = element_text(size = 13))+
+    #geom_text(aes(x= 2020, y = 90), label = "Growh rate = +6.3%", size = 5)+
+    labs(title = "Produzione scientifica IIZZSS", 
+         caption = "N. di pubblicazioni/anno \n fonte WoS", 
+         x = "", y = "")
+    
+  
+  
+  
+  IZS <-list(izsam,izsicilia, izsler, izslt, izsmezz, izsplv,  izspubas, izssardegna, izsum, izsve)
+  # 
+  # 
+  # 
+  gr <- lapply(IZS, pubrate)
+  # 
+  grizs <- do.call(rbind, gr)
+  # 
+  gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+                                         "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
+                                         "IZSUM", "IZSVE"), 
+                          grizs)  
+    
+  
+gr.frame %>%
+    mutate(Istituto = fct_reorder(Istituto, grizs)) %>% 
+    ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
+    geom_point(size = 14, col = "lightblue")+
+    geom_text()+
+    coord_flip()+
+    geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "blue")+
+    theme_ipsum(axis_title_size = 14)+
+    #theme(axis.text.y = element_blank())+
+    labs(title = "Produzione scientifica degli IIZZSS: Tasso di crescita nel periodo 2019-2022",
+         subtitle = "fonte dati: Web of Science",
+         y = " Tasso annuale di crescita ", x = "")
+  
+  # totalcitation by years ----
+  
+  IZS <-list(izsam,izsicilia, izsler, izslt, izsmezz, izsplv,  izspubas, izssardegna, izsum, izsve)
+  
+  
+  
+    
+  totCit <- function(izs) {
+    izs %>%  filter(PY == 2022) %>% 
+    summarise(TC = sum(TC), 
+              n = n())
+  }
+    
+  
+  tc <- lapply(IZS, totCit)
+  # 
+  tcizs <- do.call(rbind, tc)
+  # 
+  tc.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+                                         "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
+                                         "IZSUM", "IZSVE"), 
+                          tcizs)  %>% 
+    mutate(cit = round(TC/n, 2),
+           Istituto = fct_reorder(Istituto, cit)) %>%
+    ggplot()+
+    aes(y = cit, x = Istituto, label=cit)+
+    geom_point(size = 14, col = "lightblue")+
+    geom_text()+
+    coord_flip()+
+    geom_segment(aes(y=0, yend=cit, x=Istituto, xend=Istituto), col= "blue")+
+    theme_ipsum(axis_title_size = 14)+
+    #theme(axis.text.y = element_blank())+
+    labs(title = "Impatto citazionale degli IIZZSS: n.citazioni medio per articolo (pubblicazioni del 2022)",
+         subtitle = "fonte dati: Web of Science",
+         y = " n.citazioni/articolo ", x = "")
+    
+    
+ 
+   stat_cit <- function(izs){ 
+      izs %>%  filter(PY == 2022) %>% 
+      summarise(tc = sum(TC), 
+                n = n(), 
+                M = median(TC), 
+                m = round(mean(TC), 2), 
+                min = min(TC),
+                q1 = quantile(TC, 0.25), 
+                q3 = quantile (TC, 0.75), 
+                maxx = max(TC))
+   } 
+
+   cit <- lapply(IZS, stat_cit)
+   # 
+   cit <- do.call(rbind, cit)
+   # 
+   tc.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+                                          "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
+                                          "IZSUM", "IZSVE"), 
+                           cit) %>% 
+     select(Istituto,
+            TotCit = tc, 
+            N.articoli = n,
+            min, 
+            "25perc" = q1,
+            Mediana = M, 
+            Media = m,
+            "75perc" = q3, 
+            max = maxx
+            ) %>% 
+     arrange(desc(TotCit)) %>% 
+     write.xlsx(file = "cit.xlsx")
+ 
+  
+  izsler %>% 
+    filter(PY == 2022, 
+           TC == 3
+           ) %>% 
+    summarise(n = n())
+  
+  
   
   
   
@@ -140,7 +324,8 @@ prod %>%
   
   
   
-  ##grafico 2 presentazione cda----
+  
+##grafico 2 presentazione cda----
   
   pub  %>%
     filter(articoliif == "IF") %>% 
@@ -174,14 +359,19 @@ prod %>%
       
     ) %>%   
     mutate(Parameter = factor(Parameter, levels = c("Pubblicazioni","#Journal","somma IF","IF medio"  ))) %>% 
+    filter(OA != 2023, 
+           Parameter != "Pubblicazioni") %>% 
     ggplot()+
     aes(x = OA, y = Value, label = Value)+
-    geom_smooth(size = 1.5, se = FALSE) + geom_point(size = 3)+
+    geom_line()+
+    
+    #geom_smooth(size = 1.5, se = FALSE) + 
+    geom_point(size = 3)+
     geom_label(size = 3)+
-    labs(title = "Impatto citazionale", x = "", y = "")+
+    labs(title = "", x = "", y = "")+
     
     facet_wrap(~ Parameter, scales = "free", nrow = 1)+
-    theme_classic()+
+    theme()+
     theme(axis.text.y = element_blank(), 
           axis.ticks = element_blank(), 
           axis.line = element_blank(), 
@@ -190,6 +380,19 @@ prod %>%
           plot.caption = element_text(size = 15))
   
   
+  
+#lotka ----
+L <- lotka(M)
+  
+  Observed=L$AuthorProd[,3]
+  
+  # Theoretical distribution with Beta = 2
+  Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]))
+  
+  plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",
+       main="Authors Scientific Productivity")
+  lines(L$AuthorProd[,1],Observed,col="blue")
+  legend(x="topright",c("Theoretical (Beta=2)","Observed (Beta = 1.94)"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
   
   
   
@@ -760,22 +963,8 @@ bind_rows(
 
 
 
-prod %>%
-  mutate(Istituto= recode(Istituto, izsler = "IZSLER",
-                          izsam = "IZSAM",
-                          izsve = "IZSVE",
-                          izsic = "IZS Sicilia",
-                          izslt = "IZSLT",
-                          izsmezz = "IZS Mezzogiorno",
-                          izspiem = "IZSTO",
-                          izspuglia = "IZS Puglia Basilicata",
-                          izssard = "IZS Sardegna",
-                          izsum = "IZSUM")) %>%
-  filter( PY < 2023 & PY >2018 ) %>%  
-mutate(n = ifelse(PY == 2019 & Istituto == "IZSLER", 88,
-                  ifelse(PY == 2020 & Istituto == "IZSLER",123,
-                         ifelse(PY == 2021 & Istituto == "IZSLER",135, n)))) %>% 
-mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_))  
+
+ 
   
  
   
@@ -862,7 +1051,7 @@ mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_))
 
 
 
-# pubrate(istituto = izsler)
+ pubrate(istituto = izsler)
 # 
 # 
 # 
@@ -876,13 +1065,16 @@ mutate(lab = if_else(PY == max(PY), as.character(Istituto), NA_character_))
 # 
 gr <- lapply(IZS, pubrate)
 # 
- grizs <- do.call(rbind, gr)
+grizs <- do.call(rbind, gr)
 # 
- gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
+gr.frame <- data.frame( "Istituto" = c("IZSAM","IZSIC", "IZSLER", 
                                         "IZSLT", "IZSMEZZ", "IZSPIEM",  "IZSPUGLIA", "IZSSARD", 
                                         "IZSUM", "IZSVE"), 
-                         grizs) %>% 
-   mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs))
+                         grizs)  %>% 
+   
+   
+   
+   mutate(grizs = ifelse(Istituto == "IZSLER", 15.6, grizs))
 # 
 #  
 # 
@@ -890,17 +1082,17 @@ gr <- lapply(IZS, pubrate)
 #  
 # 
 #  
+library(hrbrthemes)
 p <- gr.frame %>%
-  mutate(grizs = ifelse(Istituto == "IZSLER", 14.5, grizs)) %>%
   mutate(Istituto = fct_reorder(Istituto, grizs)) %>%
   ggplot(aes(x = Istituto, y = grizs, label=paste(round(grizs, 1),"%")))+
   geom_point(size = 14, col = "lightblue")+
   geom_text()+
   coord_flip()+
   geom_segment(aes(y=0, yend=grizs, x=Istituto, xend=Istituto), col= "darkgrey")+
-  theme_ipsum(axis_title_size = 15)+
+  theme_ipsum(axis_title_size = 14)+
    #theme(axis.text.y = element_blank())+
-  labs(title = "Produzione scientifica degli IIZZSS: Tasso annuo di crescita  percentuale nel periodo 2018-2021",
+  labs(title = "Produzione scientifica degli IIZZSS: Tasso di crescita nel periodo 2019-2022",
        subtitle = "fonte dati: Web of Science",
        y = " Tasso annuale di crescita ", x = "")
 # 
@@ -1110,12 +1302,13 @@ b<-Jizve %>%
 # sort(Matrix::colSums(A), decreasing = TRUE)[1:5]
 
 ##########CO-CITATION ANALYSIS#######
-izsler<- readFiles("izsler.bib")
-izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
+# 
+# izsler<- convert2df(here("data","izsler.bib"))
+# izsler <- convert2df(izsler, dbsource = "scopus", format = "bibtex")
 
 
 
-net<-NetMatrix <- biblioNetwork(izsler, analysis = "co-citation", 
+net <- NetMatrix <- biblioNetwork(izsum, analysis = "co-citation", 
                            network = "references", sep = ";")
 
 networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network", 
@@ -1124,7 +1317,7 @@ networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network",
                 edges.min=5)
 
 
-M=metaTagExtraction(izsler,"CR_SO",sep=";")
+M=metaTagExtraction(izsum,"CR_SO",sep=";")
 NetMatrix <- biblioNetwork(M, analysis = "co-citation", network = "sources", sep = ";")
 net=networkPlot(NetMatrix, n = 50, Title = "Co-Citation Network", type = "auto", size.cex=TRUE, size=15, remove.multiple=FALSE, labelsize=0.7,edgesize = 10, edges.min=5)
 
